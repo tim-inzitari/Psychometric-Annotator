@@ -244,6 +244,21 @@ function getRelativeCooridnates(group){
     return[x,y]
 }
 
+function generateURN(group){
+    var doc = canvas.getObjects()[0];
+    var docHeight = doc.height;
+    var docWidth = doc.width;
+    var outWidth = Math.round(((group.width+4)/docWidth)*10000)/10000;
+    var outHeight = Math.round(((group.height+4)/docHeight)*10000)/10000;
+    var xy = getRelativeCooridnates(group);
+    var outX = Math.round(((xy[0]-2)/docWidth)*10000)/10000;
+    var outY = Math.round(((xy[1]-2)/docHeight)*10000)/10000;
+    var plainUrn = imgUrn.split("@")[0];
+    return plainUrn +"@"+outX+","+outY+","+outWidth+","+outHeight;
+
+}
+
+
 $("#submitButton").click(function() {
     // var outArray = new Array(roiArray.length);
     // for(x = 0; x < roiArray.length; x++){
@@ -266,6 +281,7 @@ $("#submitButton").click(function() {
         var temp = getRelativeCooridnates(annotationList[x].group);
         console.log(temp[0]);
         console.log(temp[1]);
+        console.log(generateURN(annotationList[x].group));
     }
     canvas.setZoom(document.getElementById("zoomInput").value);
 });
