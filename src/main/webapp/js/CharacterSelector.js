@@ -184,12 +184,14 @@ $('#new_annotation_button').click(function(){
     $('#active_annotation').append(
         $('<option></option>').val(size+1).html(size+1)
     );
+    var newLI = "<li id =\"" + size + "\" onmouseenter = \"highlightAnno(this)\" onmouseleave = \"unhighlightAnno(this)\" onclick = \"changeAnnotation(parseInt(this.id))\">" + (size+1) + "<\li>"
+    $("#image_urnList").append(newLI);
     changeAnnotation(size);
 });
 
 
 
-$('#delete_active_annotation').click(function(){
+$('#clear_active_annotation').click(function(){
     var AA = annotationList[activeAnnotation].group;
     canvas.remove(AA);
     annotationList[activeAnnotation].group = new fabric.Group();
@@ -209,22 +211,40 @@ $('#undo').click(function(){
 });
 
 function changeAnnotation(target){
-
     document.getElementById("active_annotation").value = target+1;
-    annotationList[activeAnnotation].group.forEachObject(function(path) {
+    annotationList[activeAnnotation].group.forEachObject(function(path){
         path.stroke = colorList[activeAnnotation % 4];
-        path.dirty = true;
     });
+    $("#"+activeAnnotation).css("background-color",colorList[activeAnnotation % 4]);
     activeAnnotation = target;
     annotationList[activeAnnotation].group.forEachObject(function(path) {path.stroke = 'black';});
-    var temp = new fabric.Rect({
-        left: 100,
-        top: 100,
-        fill: 'red',
-        width: 20,
-        height: 20
-    })
+    $("#"+activeAnnotation).css("background-color","black");
     rerenderThatActuallyWorks();
+}
+
+function highlightAnno(anno){
+    var target = parseInt(anno.id);
+    $('#'+target).css('background-color','RebeccaPurple');
+    annotationList[target].group.forEachObject(function(path) {
+        path.stroke = 'RebeccaPurple' ;
+    });
+    rerenderThatActuallyWorks();
+}
+
+function unhighlightAnno(anno){
+    var target = parseInt(anno.id);
+    $('#'+target).css('background-color',colorList[target % 4]);
+    if(target === activeAnnotation){
+        $('#'+target).css('background-color','black');
+        annotationList[target].group.forEachObject(function(path) {
+            path.stroke = 'black';
+        });
+    }else{
+        $('#'+target).css('background-color',colorList[target % 4]);
+        annotationList[target].group.forEachObject(function(path) {
+            path.stroke = colorList[target % 4];
+        });
+    }
 }
 
 function rerenderThatActuallyWorks(){
@@ -241,7 +261,7 @@ function getRelativeCooridnates(group){
     var anny = group.oCoords.tl.y;
     var x = annx - docx;
     var y = anny - docy;
-    return[x,y]
+    return[x,y];
 }
 
 function generateURN(group){
@@ -255,7 +275,6 @@ function generateURN(group){
     var outY = Math.round(((xy[1]-2)/docHeight)*10000)/10000;
     var plainUrn = imgUrn.split("@")[0];
     return plainUrn +"@"+outX+","+outY+","+outWidth+","+outHeight;
-
 }
 
 
