@@ -1,0 +1,57 @@
+<html>
+<head>
+	<title>Image Citation Tool 2</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<link rel="stylesheet" type="text/css" href="css/application.css">
+	<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="js/openseadragon.js"></script>
+	<script type="text/javascript" src="js/openseadragon-guides.js"></script>
+	<script type="text/javascript" src="js/selection.js"></script>
+	<script type="text/javascript" src="js/selectionoverlay.js"></script>
+	<script type="text/javascript" src="js/selectionrect.js"></script>
+</head>
+<body>
+
+<header>
+	Character Annotator <span id="app_header_versionInfo">v.0.0.1</span>
+</header>
+
+<div id="image_sidebar" class="app_sidebarDiv">
+	<button id = "loadImageButton">Load Image</button>
+	<div id = input_form>
+		<form id = "form">
+			<h2>Character Input</h2>
+			Character:<br>
+			<input type="text" name="anno" id = "annobox" maxlength="1" value="">
+			<br>
+			Difficulty (0 being very easy and 7 being very difficult):<br>
+			0<input oninput="updateValue()" type="range" id="difficulty_range" value="0" max="7">7
+			<div id="difficulty_view">0</div>
+			<br><br>
+		</form>
+		<button id = "submitButton">Submit</button>
+	</div>
+	</ul>
+
+</div>
+
+<div>
+	<p>Simply input the character shown into the text box and then rate on a scale of 1-10 how difficult it was to transcribe. Click The button below to start.  Note that the button might take a moment to load.</p>
+</div>
+
+
+<div id="image_imageContainer">
+
+</div>
+
+<footer>
+	<!-- modified copyright message -->
+	<p>
+		CITE/CTS is ©2002–2017 Neel Smith and Christopher Blackwell. This software is based off of the tool for working with images cited via CITE2 URNs which is ©2017 by Christopher Blackwell. This software and Christopher Blackwell's ICT2 are available for use, modification, and distribution under the terms of the <a href="https://opensource.org/licenses/gpl-3.0.html">GPL 3.0</a> license. This software is based on <a href="http://openseadragon.github.io">Openseadragon</a>.
+	</p>
+
+</footer>
+
+
+<script type="text/javascript" src="js/characterAnnotator.js"></script>
+</html>
