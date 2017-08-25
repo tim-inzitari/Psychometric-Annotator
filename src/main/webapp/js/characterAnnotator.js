@@ -27,7 +27,7 @@ var startTime;
 
 /* Main */
 jQuery(function($){
-
+    $('form').each(function() { this.reset() });
     var paramUrn;
     $('#input_form').hide();
     $('#image_imageContainer').hide();

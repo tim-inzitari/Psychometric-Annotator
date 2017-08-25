@@ -37,7 +37,7 @@ var colorList = ['red','blue','green','yellow'];
 
 /* Main */
 jQuery(function($){
-
+    $('form').each(function() { this.reset() });
     var paramUrn;
     imgUrn = "urn:cite2:ASAV:vaimg.v1:REG_VAT12_001r@0.3703,0.2692,0.08287,0.01594";
     imageDrawer();
