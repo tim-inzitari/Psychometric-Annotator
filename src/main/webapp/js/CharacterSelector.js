@@ -201,9 +201,9 @@ function changeAnnotation(target){
 
 function highlightAnno(anno){
     var target = parseInt(anno.id);
-    $('#'+target).css('background-color','RebeccaPurple');
+    $('#'+target).css('background-color','black');
     annotationList[target].group.forEachObject(function(path) {
-        path.stroke = 'RebeccaPurple' ;
+        path.stroke = 'black' ;
     });
     rerenderThatActuallyWorks();
 }
@@ -280,12 +280,16 @@ $("#submitButton").click(function() {
     var outArray = [];
     var xArray = [];
     var yArray = [];
-    for(var x = 0; x < annotationList.length; x++){
-        //console.log(annotationList[x].group.toDataURL());
-        var temp = getRelativeCooridnates(annotationList[x].group);
-        xArray[x] = temp[0];
-        yArray[x] = temp[1];
-        outArray.push(generateURN(annotationList[x].group));
+    for(var x = 0; x < annotationList.length; x++) {
+        if (annotationList[x].group.getObjects().length > 0) {
+            var temp = getRelativeCooridnates(annotationList[x].group);
+            xArray[x] = temp[0];
+            yArray[x] = temp[1];
+            outArray.push(generateURN(annotationList[x].group));
+        }else{
+            annotationList.splice(x, 1);
+            x--;
+        }
     }
     console.log(JSON.stringify(outArray))
     submitPost(0,outArray,xArray,yArray);
@@ -311,7 +315,7 @@ function submitPost(x,outArray,xArray,yArray){
         $.post("URNServlet",{
             askResponse: "img",
             urn:imgUrn,
-            id:x,
+            id:x+1,
             x:xArray[x],
             y:yArray[x],
             data:imgRet
