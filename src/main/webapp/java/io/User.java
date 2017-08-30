@@ -96,8 +96,8 @@ public class User {
         return hasLineDB();
     }
 
-    public boolean returnWord(String[] wletters) {
-        saveLettersDB(activeWord.getDocID(),activeWord.getLineNo(), activeWord.getWordNo(),wletters);
+    public boolean returnWord(String annotation, String[] wletters) {
+        saveLettersDB(activeWord.getDocID(),activeWord.getLineNo(), activeWord.getWordNo(),annotation,wletters);
         return hasWordDB();
     }
 
@@ -488,7 +488,7 @@ public class User {
             loadWord.setString(1, sanitize(user));
             loadWordRes = loadWord.executeQuery();
             if (loadWordRes.next()) {
-                activeWord = new Word(loadWordRes.getString(1), loadWordRes.getInt(2), loadWordRes.getInt(3), loadWordRes.getInt(4),loadWordRes.getString(5));
+                activeWord = new Word(loadWordRes.getString(1), loadWordRes.getInt(2), loadWordRes.getInt(3), loadWordRes.getInt(4),loadWordRes.getString(5),loadWordRes.getString(6));
             }
             loadWordRes.close();
             loadWord.close();
@@ -528,7 +528,7 @@ public class User {
         }
     }
 
-    private void saveLettersDB(int page, int line, int word, String[] letters){
+    private void saveLettersDB(int page, int line, int word, String annotation, String[] letters){
         Connection dbc = null;
         PreparedStatement saveLetters = null;
         PreparedStatement deactivateWord = null;
@@ -547,12 +547,13 @@ public class User {
                 saveLetters.executeUpdate();
             }
             saveLetters.close();
-            String deactivateWordSQL = "UPDATE word SET used = true WHERE docID = ? AND lineNo = ? AND wordNo = ? AND transID = ?";
+            String deactivateWordSQL = "UPDATE word SET used = true, annotation = ? WHERE docID = ? AND lineNo = ? AND wordNo = ? AND transID = ?";
             deactivateWord = dbc.prepareStatement(deactivateWordSQL);
-            deactivateWord.setInt(1,page);
-            deactivateWord.setInt(2,line);
-            deactivateWord.setInt(3,word);
-            deactivateWord.setString(4,sanitize(user));
+            deactivateWord.setString(1,annotation);
+            deactivateWord.setInt(2,page);
+            deactivateWord.setInt(3,line);
+            deactivateWord.setInt(4,word);
+            deactivateWord.setString(5,sanitize(user));
             deactivateWord.executeUpdate();
             deactivateWord.close();
             dbc.close();

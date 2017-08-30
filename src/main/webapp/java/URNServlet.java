@@ -65,7 +65,8 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
             if (type.equals("char")) {
                 String in = request.getParameter("data");
                 String[] URNs = deStringify(in);
-                boolean out = handleCharacterReturn(translateUser(user), in);
+                String anno = request.getParameter("annotation");
+                boolean out = handleCharacterReturn(translateUser(user), anno, in);
                 if (out) {
                     response.getWriter().write("TRUE");
                 } else {
@@ -95,7 +96,9 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
             response.getWriter().write(ret);
         } else {
             String type = request.getParameter("type");
-            if (type.toLowerCase().equals("lineselector")) {
+            if(type == null){
+                System.out.println(request.getParameter("data"));
+            } else if(type.toLowerCase().equals("lineselector")) {
                 response.getWriter().write(handleLineSelector(translateUser(user)));
             } else if (type.toLowerCase().equals("wordselector")) {
                 response.getWriter().write(handleWordSelector(translateUser(user)));
@@ -138,8 +141,8 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
         return userList.get(user).returnLine(deStringify(input));
     }
 
-    private boolean handleCharacterReturn(int user, String input) {
-        return userList.get(user).returnWord(deStringify(input));
+    private boolean handleCharacterReturn(int user, String annotation, String input) {
+        return userList.get(user).returnWord(annotation, deStringify(input));
     }
 
     private String handleWordSelector(int user) {

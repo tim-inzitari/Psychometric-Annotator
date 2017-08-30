@@ -39,7 +39,7 @@ jQuery(function($){
 
     $.post("URNServlet", {
             askResponse:"ask",
-            type:"wordSelector",
+            type:"wordSelector"
         },function(responseText){
         $('#image_imageContainer').hide();
         paramUrn = responseText;

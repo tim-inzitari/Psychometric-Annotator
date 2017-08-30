@@ -9,7 +9,9 @@ var canvas  = null;
 var activeAnnotation = 0;
 var annotationList = [];
 var redo = null;
-var colorList = ['red','blue','green','yellow'];
+var colorList =  ["#463827","#f23568","#6d38ff","#38ffd7","#fff238","#661641","#275fb3","#24a669","#a67b24","#ff38a2",
+    "#194973","#35f268","#7f441c","#801c79","#2a8ebf","#216616","#d97330","#da32e6","#196d73","#bdff38","#bf3e2a",
+    "#3d1973","#30cdd9","#858c1f","#661616"];
 
 
 // var viewer = null;
@@ -37,20 +39,19 @@ var colorList = ['red','blue','green','yellow'];
 
 /* Main */
 jQuery(function($){
-    $('form').each(function() { this.reset() });
-    var paramUrn;
-    imgUrn = "urn:cite2:ASAV:vaimg.v1:REG_VAT12_001r@0.3703,0.2692,0.08287,0.01594";
-    imageDrawer();
-    // $.post("URNServlet", {
-    //     askResponse:"ask",
-    //     type:"characterSelector",
-    // },function(responseText){
-    //     $('#image_imageContainer').hide();
-    //     paramUrn = responseText;
-    //     imgUrn = "urn:cite2:ASAV:vaimg.v1:REG_VAT12_001r@0.3703,0.2692,0.08287,0.01594";
-    //     $("#image_imageContainer").append("<img id = \"raw_document\" src = \"" + getImageSource(imgUrn) + "\" visible = \"False\"></img>");
-    //     imageDrawer();
-    // });
+    // $('form').each(function() { this.reset() });
+    // var paramUrn;
+    // imgUrn = "urn:cite2:ASAV:vaimg.v1:REG_VAT12_001r@0.3703,0.2692,0.08287,0.01594";
+    // imageDrawer();
+    $.post("URNServlet", {
+        askResponse:"ask",
+        type:"characterSelector"
+    },function(responseText){
+        paramUrn = responseText;
+        imgUrn = paramUrn;
+        console.log(imgUrn);
+        imageDrawer();
+    });
 });
 
 //loads in the image, crops it so that only the region of interest is visible, and sets up the annotation tools.
@@ -58,9 +59,11 @@ function imageDrawer(){
     document.getElementById("zoomInput").value = 1;
     document.getElementById("brushInput").value = 1;
     canvas = new fabric.Canvas('image_imageCanvas');
+
     canvas.onChange = canvas.renderAll.bind(canvas)
     annotationList.push(new Annotation(1,new fabric.Group()));
     canvas.add(annotationList[0].group);
+    canvas.backgroundColor = 'black';
     canvas.on('path:created', function(e){
         var your_path = e.path;
         var AA = annotationList[activeAnnotation].group;
@@ -71,8 +74,6 @@ function imageDrawer(){
     var ctx = canvas.getContext("2d");
     var image = new Image();
     image.onload = function() {
-        console.log("W: " + image.width);
-        console.log("H: " + image.height);
         var loc = getImageLocation(imgUrn);
         var x1 = image.width * loc[0];
         var y1 = image.height * loc[1];
@@ -99,41 +100,11 @@ function imageDrawer(){
         canvas.add(imageInstance);
         imageInstance.selectable = true;
         canvas.renderAll();
-        canvas.isDrawingMode = true
+        canvas.isDrawingMode = true;
+        canvas.freeDrawingBrush.color = 'white';
     }
     image.src = getImageSource(imgUrn);
-
-
-
-
-
-
-
-
-    // $.jCanvas.defaults.fromCenter = false;
-    // //$.jCanvas.defaults.cropFromCenter = false;
-    // var $canvas = $("#image_imageCanvas");
-    //
-    // var image = new Image();
-    //
-    // var loc = getImageLocation(imgUrn);
-    // var magic = Math.max(image.height, image.width);
-    // //$(image).onready(function(){
-    //     var x1 = image.width * loc[0];
-    //     var y1 = image.height * loc[1];
-    //     var width = image.width * loc[2];
-    //     var height = image.height * loc[3];
-    //     // $canvas.attr( 'width', width*5);
-    //     // $canvas.attr( 'height',height*5);
-    //     $canvas.drawImage({
-    //         source: image,
-    //         sx: x1, sy:y1,
-    //         sWidth: width,
-    //         sHeight: height,
-    //     });
-    //     //$canvas.image
-    //
-    // //});
+    rerenderThatActuallyWorks();
 }
 
 
@@ -153,9 +124,7 @@ function getImageSource(imgUrn){
     var imgId = plainUrn.split(":")[4];
     var ts = "";
     var localDir = plainUrn.split(":")[0] + "_" + plainUrn.split(":")[1] + "_" + plainUrn.split(":")[2] + "_" + plainUrn.split(":")[3] + "_/";
-    console.log("1: " + localDir);
     ts = "image_archive/" + localDir + imgId + "_RAW.jpg";
-    console.log("2: " + ts);
     return ts;
 }
 
@@ -179,46 +148,54 @@ function Annotation(number, group){
 $('#new_annotation_button').click(function(){
     var size = annotationList.length;
     console.log("Adding Annotation # " + size);
-    annotationList.push(new Annotation(size,new fabric.Group()));
-    canvas.add(annotationList[size].group);
+    annotationList.splice(activeAnnotation+1,0, new Annotation(activeAnnotation+1,new fabric.Group()));
+    canvas.add(annotationList[activeAnnotation+1].group);
     $('#active_annotation').append(
         $('<option></option>').val(size+1).html(size+1)
     );
-    var newLI = "<li id =\"" + size + "\" onmouseenter = \"highlightAnno(this)\" onmouseleave = \"unhighlightAnno(this)\" onclick = \"changeAnnotation(parseInt(this.id))\">" + (size+1) + "<\li>"
+    var newLI = '<li id ="' + size + '" onmouseenter = "highlightAnno(this)" onmouseleave = "unhighlightAnno(this)" onclick = "changeAnnotation(parseInt(this.id))">' + (size+1) + '</li>'
+    for(var x = activeAnnotation+1; x < annotationList.length; x++){
+        annotationList[x].group.forEachObject(function(path){
+            path.stroke = colorList[x % colorList.length];
+        });
+    }
     $("#image_urnList").append(newLI);
-    changeAnnotation(size);
+    $("#"+size).css("background-color",colorList[size % colorList.length]);
+    changeAnnotation(activeAnnotation+1);
 });
 
 
 
 $('#clear_active_annotation').click(function(){
-    var AA = annotationList[activeAnnotation].group;
-    canvas.remove(AA);
-    annotationList[activeAnnotation].group = new fabric.Group();
-    canvas.add(annotationList[activeAnnotation].group);
-    rerenderThatActuallyWorks();
+    clearAnnotation(activeAnnotation);
 });
+
+function clearAnnotation(anno){
+    var AA = annotationList[anno].group;
+    canvas.remove(AA);
+    annotationList[anno].group = new fabric.Group();
+    canvas.add(annotationList[anno].group);
+    rerenderThatActuallyWorks();
+}
 
 $('#undo').click(function(){
     var AA = annotationList[activeAnnotation].group;
+    console.log(AA.toDataURL());
     var obj = AA.getObjects();
-    console.log(obj.length);
-    var undo = obj[obj.length-1];
-    console.log(undo);
-    console.log(undo.toDataURL());
-    AA.remove(undo);
+    AA.removeWithUpdate(obj[obj.length-1]);
+    console.log(AA.toDataURL());
     rerenderThatActuallyWorks();
 });
 
 function changeAnnotation(target){
     document.getElementById("active_annotation").value = target+1;
     annotationList[activeAnnotation].group.forEachObject(function(path){
-        path.stroke = colorList[activeAnnotation % 4];
+        path.stroke = colorList[activeAnnotation % colorList.length];
     });
-    $("#"+activeAnnotation).css("background-color",colorList[activeAnnotation % 4]);
+    $("#"+activeAnnotation).css("background-color",colorList[activeAnnotation % colorList.length]);
     activeAnnotation = target;
-    annotationList[activeAnnotation].group.forEachObject(function(path) {path.stroke = 'black';});
-    $("#"+activeAnnotation).css("background-color","black");
+    annotationList[activeAnnotation].group.forEachObject(function(path) {path.stroke = 'white';});
+    $("#"+activeAnnotation).css("background-color","white");
     rerenderThatActuallyWorks();
 }
 
@@ -233,19 +210,39 @@ function highlightAnno(anno){
 
 function unhighlightAnno(anno){
     var target = parseInt(anno.id);
-    $('#'+target).css('background-color',colorList[target % 4]);
+    $('#'+target).css('background-color',colorList[target % colorList.length]);
+
     if(target === activeAnnotation){
-        $('#'+target).css('background-color','black');
+        $('#'+target).css('background-color','white');
         annotationList[target].group.forEachObject(function(path) {
-            path.stroke = 'black';
+            path.stroke = 'white';
         });
     }else{
-        $('#'+target).css('background-color',colorList[target % 4]);
+        $('#'+target).css('background-color',colorList[target % colorList.length]);
         annotationList[target].group.forEachObject(function(path) {
-            path.stroke = colorList[target % 4];
+            path.stroke = colorList[target % colorList.length];
         });
     }
+    rerenderThatActuallyWorks();
 }
+
+$("#delete_active_annotation").click(function(){
+    clearAnnotation(activeAnnotation);
+    if(annotationList.length > 1) {
+        canvas.remove(annotationList[activeAnnotation]);
+        annotationList.splice(activeAnnotation, 1);
+        $('#' + activeAnnotation).remove();
+        for (var x = activeAnnotation; x <= annotationList.length; x++) {
+            $('#' + x).text(x);
+            $('#' + x).prop("id", x - 1);
+        }
+        activeAnnotation = Math.max(activeAnnotation - 1, 0);
+        changeAnnotation(activeAnnotation);
+    }
+});
+
+
+
 
 function rerenderThatActuallyWorks(){
     canvas.setZoom(document.getElementById("zoomInput").value-.01);
@@ -279,28 +276,45 @@ function generateURN(group){
 
 
 $("#submitButton").click(function() {
-    // var outArray = new Array(roiArray.length);
-    // for(x = 0; x < roiArray.length; x++){
-    //     outArray[x] = imgUrn + "@" + roiArray[x].roi;
-    // }
-    // $.post("URNServlet", {
-    //     askResponse: "res",
-    //     type:"char",
-    //     data: JSON.stringify(outArray)
-    // },function(responseText){
-    //     if(responseText === "TRUE") {
-    //         location.reload();
-    //     }else{
-    //         window.location = "/index.html";
-    //     }
-    // });
     canvas.setZoom(1);
-    for(x = 0; x < annotationList.length; x++){
-        console.log(annotationList[x].group.toDataURL());
+    var outArray = [];
+    var xArray = [];
+    var yArray = [];
+    for(var x = 0; x < annotationList.length; x++){
+        //console.log(annotationList[x].group.toDataURL());
         var temp = getRelativeCooridnates(annotationList[x].group);
-        console.log(temp[0]);
-        console.log(temp[1]);
-        console.log(generateURN(annotationList[x].group));
+        xArray[x] = temp[0];
+        yArray[x] = temp[1];
+        outArray.push(generateURN(annotationList[x].group));
     }
+    console.log(JSON.stringify(outArray))
+    submitPost(0,outArray,xArray,yArray);
     canvas.setZoom(document.getElementById("zoomInput").value);
 });
+
+function submitPost(x,outArray,xArray,yArray){
+    if(x === annotationList.length){
+        $.post("URNServlet", {
+            askResponse: "res",
+            annotation: $('#full_text_annotation').attr("value"),
+            type:"char",
+            data: JSON.stringify(outArray)
+        },function(responseText){
+            if(responseText === "TRUE") {
+                location.reload();
+            }else{
+                window.location = "/index.html";
+            }
+        });
+    }else{
+        var imgRet = annotationList[x].group.toDataURL();
+        $.post("URNServlet",{
+            askResponse: "img",
+            x:xArray[x],
+            y:yArray[x],
+            data:imgRet
+        },function(){
+            submitPost(x+1,outArray,xArray,yArray);
+        });
+    }
+}

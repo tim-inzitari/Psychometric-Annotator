@@ -4,11 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 	<link rel="stylesheet" type="text/css" href="css/application.css">
 	<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
-	<script type="text/javascript" src="js/openseadragon.js"></script>
-	<script type="text/javascript" src="js/openseadragon-guides.js"></script>
-	<script type="text/javascript" src="js/selection.js"></script>
-	<script type="text/javascript" src="js/selectionoverlay.js"></script>
-	<script type="text/javascript" src="js/selectionrect.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.17/fabric.min.js"></script>
 </head>
 <body>
 
@@ -41,7 +37,9 @@
 
 
 <div id="image_imageContainer">
-
+	<canvas id="image_imageCanvas" height = "500" width = "500"   style="border: 3px solid black;">
+		Your browser does not support the HTML5 canvas tag.
+	</canvas>
 </div>
 
 <footer>

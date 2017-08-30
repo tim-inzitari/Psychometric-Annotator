@@ -35,7 +35,7 @@ jQuery(function($){
     var paramUrn;
     $.post("URNServlet", {
             askResponse: "ask",
-            type:"lineSelector",
+            type:"lineSelector"
         },function(responseText){
         paramUrn = responseText;
         console.log(responseText);

@@ -23,7 +23,7 @@
     <div id = "annotation_list">
         <h1>Annotations:</h1>
         <ul id="image_urnList">
-            <li id="0" style="background-color:black;" onmouseenter = "highlightAnno(this)" onmouseleave = "unhighlightAnno(this)" onclick = "changeAnnotation(parseInt(this.id))" >1</li>
+            <li id="0" style="background-color:white;" onmouseenter = "highlightAnno(this)" onmouseleave = "unhighlightAnno(this)" onclick = "changeAnnotation(parseInt(this.id))" >1</li>
         </ul>
         Text Annotation: <form><input id = "full_text_annotation"></form>
         <button id="new_annotation_button">Add Annoation</button>
@@ -43,6 +43,7 @@
         </form>
         <button id="clear_active_annotation">Reset Active Annotation</button>
         <button id="undo">Undo last mark</button>
+        <button id="delete_active_annotation">Delete Active Annotation</button>
     </div>
     <button id="submitButton">Submit</button>
 </div>

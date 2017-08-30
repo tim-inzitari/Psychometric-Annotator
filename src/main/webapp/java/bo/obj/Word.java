@@ -9,13 +9,16 @@ public class Word {
     private int lineNo;
     private int wordNo;
     private String URN;
+    private String annotation;
 
-    public Word(String transID, int docID, int lineNo, int wordNo, String URN) {
+    public Word(String transID, int docID, int lineNo, int wordNo, String URN, String annotation) {
         this.transID = transID;
         this.docID = docID;
         this.lineNo = lineNo;
         this.wordNo = wordNo;
+
         this.URN = URN;
+        this.annotation = annotation;
     }
 
     public String getTransID() {
@@ -56,5 +59,13 @@ public class Word {
 
     public void setURN(String URN) {
         this.URN = URN;
+    }
+
+    public String getAnnotation() {
+        return annotation;
+    }
+
+    public void setAnnotation(String annotation) {
+        this.annotation = annotation;
     }
 }
