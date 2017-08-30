@@ -115,6 +115,11 @@ public class User {
         return out;
     }
 
+    public String sendToImageHandler(ImageURL img, int charNo) throws IOException{
+        return ImagePusher.pushImage(img,activeWord.getLineNo(),activeWord.getWordNo(),activeWord.getTransID(),charNo);
+
+    }
+
 
 
 
@@ -543,7 +548,6 @@ public class User {
                 saveLetters.setInt(4,word);
                 saveLetters.setInt(5,x);
                 saveLetters.setString(6,letters[x]);
-                log.info(saveLetters.toString());
                 saveLetters.executeUpdate();
             }
             saveLetters.close();

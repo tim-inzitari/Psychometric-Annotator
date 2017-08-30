@@ -15,21 +15,24 @@ import javax.servlet.http.HttpServletResponse;
  * Created by smgri on 8/30/2017.
  */
 public class ImagePusher{
-    private final String IMAGE_HANDLER_LOCATION = "https://py-image-handler-dot-premium-bloom-174915.appspot.com/";
-    private final String CHARSET = java.nio.charset.StandardCharsets.UTF_8.name();
+    private static final String IMAGE_HANDLER_LOCATION = "https://py-image-handler-dot-premium-bloom-174915.appspot.com/";
+    private static final String CHARSET = java.nio.charset.StandardCharsets.UTF_8.name();
 
-    public ImagePusher(){
 
-    }
-
-    public String pushImage(ImageURL img) throws MalformedURLException, IOException {
+    public static String pushImage(ImageURL img, int lineNo, int wordNo, String user, int charNo) throws MalformedURLException, IOException {
         String urn =img.getURN();
         String imgURL = img.getImageURL();
         String x = img.getX()+"";
         String y = img.getY()+"";
+        String ln = lineNo+"";
+        String wn = wordNo+"";
+        String cn = charNo+"";
 
-        String query = String.format("urn=%s&x=%s&y=%s&imgURL=%s",
+        String query = String.format("urn=%s&line=%s&word=%s&character=%s&x=%s&y=%s&imgURL=%s",
                 URLEncoder.encode(urn, CHARSET),
+                URLEncoder.encode(ln,CHARSET),
+                URLEncoder.encode(wn,CHARSET),
+                URLEncoder.encode(cn,CHARSET),
                 URLEncoder.encode(x, CHARSET),
                 URLEncoder.encode(y, CHARSET),
                 URLEncoder.encode(imgURL, CHARSET));

@@ -97,11 +97,10 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
                     ret = ret + ",";
                 }
             }
-            log.info(ret);
             response.getWriter().write(ret);
         }else if(askResponse.toLowerCase().equals("img")){
             log.info("Redirecting image response to python app");
-            String out = ip.pushImage(new ImageURL((int)Double.parseDouble(request.getParameter("x")),(int)Double.parseDouble(request.getParameter("y")),request.getParameter("data"),request.getParameter("urn")));
+            String out = handleImageReturn(translateUser(user), new ImageURL((int)Double.parseDouble(request.getParameter("x")),(int)Double.parseDouble(request.getParameter("y")),request.getParameter("data"),request.getParameter("urn")), Integer.parseInt(request.getParameter("id")));
             response.getWriter().write(out);
         } else {
             String type = request.getParameter("type");
@@ -123,6 +122,7 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
     }
 
 
+
     protected void doGet(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
         //String text = po.getNextURN();
         response.setContentType("text/plain");  // Set content type of the response so that jQuery knows what it can expect.
@@ -130,6 +130,11 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
         response.getWriter().write("urn:cite2:hmt:vaimg.v1:VA012RN_0013");       // Write response body.
         //System.out.println(text);
     }
+
+    private String handleImageReturn(int user, ImageURL img, int id) throws IOException{
+        return userList.get(user).sendToImageHandler(img,id);
+    }
+
 
     private String handleLineSelector(int user) {
         //placeholder

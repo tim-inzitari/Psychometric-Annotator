@@ -276,7 +276,7 @@ function generateURN(group){
 
 
 $("#submitButton").click(function() {
-    canvas.setZoom(1);
+    $('#image_imageContainer').hide();
     var outArray = [];
     var xArray = [];
     var yArray = [];
@@ -289,10 +289,10 @@ $("#submitButton").click(function() {
     }
     console.log(JSON.stringify(outArray))
     submitPost(0,outArray,xArray,yArray);
-    canvas.setZoom(document.getElementById("zoomInput").value);
 });
 
 function submitPost(x,outArray,xArray,yArray){
+    canvas.setZoom(1);
     if(x === annotationList.length){
         $.post("URNServlet", {
             askResponse: "res",
@@ -311,6 +311,7 @@ function submitPost(x,outArray,xArray,yArray){
         $.post("URNServlet",{
             askResponse: "img",
             urn:imgUrn,
+            id:x,
             x:xArray[x],
             y:yArray[x],
             data:imgRet
