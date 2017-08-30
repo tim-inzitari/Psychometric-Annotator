@@ -130,9 +130,12 @@ public class User {
     private Connection getConnection(){
         try {
             if (System.getProperty("com.google.appengine.runtime.version").startsWith("Google App Engine/")) {
+                log.info("Should see this");
                 DB_URL = System.getProperty("ae-cloudsql.cloudsql-database-url");
+                log.info(DB_URL);
                 Class.forName("com.mysql.jdbc.GoogleDriver");
             } else {
+                log.info("shouldn't see this");
                 DB_URL = System.getProperty("mysql.local-database-url");
                 Class.forName("com.mysql.jdbc.Driver");
             }
