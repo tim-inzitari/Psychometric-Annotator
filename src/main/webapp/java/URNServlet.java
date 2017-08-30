@@ -1,9 +1,12 @@
 
+import bo.obj.ImageURL;
+import io.ImagePusher;
 import io.User;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +18,7 @@ import java.util.logging.Logger;
  */
 
 public class URNServlet extends javax.servlet.http.HttpServlet {
+    private final String IMAGE_HANDLER_LOCATION = "https://py-image-handler-dot-premium-bloom-174915.appspot.com/";
     private static final Logger log = Logger.getLogger(URNServlet.class.getName());
     private HashMap<String, Integer> userMap;
     private ArrayList<User> userList;
@@ -33,6 +37,7 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
     }
 
     protected void doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
+        ImagePusher ip = new ImagePusher();
         UserService userService = UserServiceFactory.getUserService();
         String askResponse = request.getParameter("askResponse");
         String user = "TEST";
@@ -94,10 +99,14 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
             }
             log.info(ret);
             response.getWriter().write(ret);
+        }else if(askResponse.toLowerCase().equals("img")){
+            log.info("Redirecting image response to python app");
+            String out = ip.pushImage(new ImageURL((int)Double.parseDouble(request.getParameter("x")),(int)Double.parseDouble(request.getParameter("y")),request.getParameter("data"),request.getParameter("urn")));
+            response.getWriter().write(out);
         } else {
             String type = request.getParameter("type");
             if(type == null){
-                System.out.println(request.getParameter("data"));
+                log.warning("Invalid Response");
             } else if(type.toLowerCase().equals("lineselector")) {
                 response.getWriter().write(handleLineSelector(translateUser(user)));
             } else if (type.toLowerCase().equals("wordselector")) {

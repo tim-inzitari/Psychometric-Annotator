@@ -9,7 +9,7 @@ var canvas  = null;
 var activeAnnotation = 0;
 var annotationList = [];
 var redo = null;
-var colorList =  ["#463827","#f23568","#6d38ff","#38ffd7","#fff238","#661641","#275fb3","#24a669","#a67b24","#ff38a2",
+var colorList =  ["#f23568","#6d38ff","#38ffd7","#fff238","#661641","#275fb3","#24a669","#a67b24","#ff38a2",
     "#194973","#35f268","#7f441c","#801c79","#2a8ebf","#216616","#d97330","#da32e6","#196d73","#bdff38","#bf3e2a",
     "#3d1973","#30cdd9","#858c1f","#661616"];
 
@@ -310,6 +310,7 @@ function submitPost(x,outArray,xArray,yArray){
         var imgRet = annotationList[x].group.toDataURL();
         $.post("URNServlet",{
             askResponse: "img",
+            urn:imgUrn,
             x:xArray[x],
             y:yArray[x],
             data:imgRet
