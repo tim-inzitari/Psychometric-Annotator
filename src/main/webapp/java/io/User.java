@@ -135,7 +135,6 @@ public class User {
                 log.info(DB_URL);
                 Class.forName("com.mysql.jdbc.GoogleDriver");
             } else {
-                log.info("shouldn't see this");
                 DB_URL = System.getProperty("mysql.local-database-url");
                 Class.forName("com.mysql.jdbc.Driver");
             }

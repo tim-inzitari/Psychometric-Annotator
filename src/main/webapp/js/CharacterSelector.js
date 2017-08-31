@@ -251,6 +251,8 @@ function rerenderThatActuallyWorks(){
 }
 
 function getRelativeCooridnates(group){
+    var zoom = canvas.getZoom();
+    canvas.setZoom(1);
     var doc = canvas.getObjects()[0];
     var docx = doc.oCoords.tl.x;
     var docy = doc.oCoords.tl.y;
@@ -258,25 +260,39 @@ function getRelativeCooridnates(group){
     var anny = group.oCoords.tl.y;
     var x = annx - docx;
     var y = anny - docy;
+    canvas.setZoom(zoom);
     return[x,y];
 }
 
 function generateURN(group){
+    var zoom = canvas.getZoom();
+    canvas.setZoom(1);
     var doc = canvas.getObjects()[0];
     var docHeight = doc.height;
+    console.log("docHeight: " + docHeight);
     var docWidth = doc.width;
+    console.log("docWidth: " + docWidth);
     var outWidth = Math.round(((group.width+4)/docWidth)*10000)/10000;
+    console.log("outWidth: " + outWidth);
     var outHeight = Math.round(((group.height+4)/docHeight)*10000)/10000;
+    console.log("outHeight: " + outHeight);
     var xy = getRelativeCooridnates(group);
+    console.log("X: " + xy[0]);
+    console.log("Y: " + xy[1]);
     var outX = Math.round(((xy[0]-2)/docWidth)*10000)/10000;
+    console.log("outX: " + outX);
     var outY = Math.round(((xy[1]-2)/docHeight)*10000)/10000;
+    console.log("outX: " + outY);
     var plainUrn = imgUrn.split("@")[0];
+    console.log('plainUrn +"@"+outX+","+outY+","+outWidth+","+outHeight: ' + plainUrn +"@"+outX+","+outY+","+outWidth+","+outHeight);
+    canvas.setZoom(zoom);
     return plainUrn +"@"+outX+","+outY+","+outWidth+","+outHeight;
 }
 
 
 $("#submitButton").click(function() {
     $('#image_imageContainer').hide();
+    canvas.setZoom(1);
     var outArray = [];
     var xArray = [];
     var yArray = [];
@@ -305,9 +321,9 @@ function submitPost(x,outArray,xArray,yArray){
             data: JSON.stringify(outArray)
         },function(responseText){
             if(responseText === "TRUE") {
-                location.reload();
+                //location.reload();
             }else{
-                window.location = "/index.html";
+                //window.location = "/index.html";
             }
         });
     }else{

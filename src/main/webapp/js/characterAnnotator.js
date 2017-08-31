@@ -50,9 +50,7 @@ function setUpUI(){
 }
 
 function imageDrawer(){
-    console.log("not");
     canvas = new fabric.Canvas('image_imageCanvas');
-    console.log("here");
     var ctx = canvas.getContext("2d");
     var image = new Image();
     image.onload = function() {
@@ -84,9 +82,11 @@ function imageDrawer(){
         canvas.add(imageInstance);
         canvas.renderAll();
     }
-    canvas.setZoom(10);
     image.src = getImageSource(imgUrn);
+    canvas.setZoom(10);
+    canvas.renderAll();
 }
+
 
 function getImageLocation(imgUrn){
     var splitUrn = imgUrn.split("@");
@@ -104,6 +104,7 @@ function getImageSource(imgUrn){
     var ts = "";
     var localDir = plainUrn.split(":")[0] + "_" + plainUrn.split(":")[1] + "_" + plainUrn.split(":")[2] + "_" + plainUrn.split(":")[3] + "_/";
     ts = "image_archive/" + localDir + imgId + "_RAW.jpg";
+    console.log();
     return ts;
 }
 
