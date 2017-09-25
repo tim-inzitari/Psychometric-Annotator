@@ -77,6 +77,10 @@ public class User {
         }
     }
 
+    public Word getActiveWord(){
+        return activeWord;
+    }
+
     public String getNextLetter(){
         loadLetterDB();
         if (activeLetter != null) {
@@ -115,10 +119,6 @@ public class User {
         return out;
     }
 
-    public String sendToImageHandler(ImageURL img, int charNo) throws IOException{
-        return ImagePusher.pushImage(img,activeWord.getLineNo(),activeWord.getWordNo(),activeWord.getTransID(),charNo);
-
-    }
 
 
 
@@ -130,9 +130,7 @@ public class User {
     private Connection getConnection(){
         try {
             if (System.getProperty("com.google.appengine.runtime.version").startsWith("Google App Engine/")) {
-                log.info("Should see this");
                 DB_URL = System.getProperty("ae-cloudsql.cloudsql-database-url");
-                log.info(DB_URL);
                 Class.forName("com.mysql.jdbc.GoogleDriver");
             } else {
                 DB_URL = System.getProperty("mysql.local-database-url");
@@ -172,7 +170,6 @@ public class User {
             checkTransRes.close();
             if(count == 0){
                 String addTransSQL = "INSERT INTO trans(ID) VALUES (?)";
-                log.warning("doublecheck");
                 addTrans = dbc.prepareStatement(addTransSQL);
                 addTrans.setString(1,dbTrans);
                 addTrans.executeUpdate();

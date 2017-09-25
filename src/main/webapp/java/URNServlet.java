@@ -1,12 +1,16 @@
 
 import bo.obj.ImageURL;
-import io.ImagePusher;
+import bo.obj.Word;
+import com.google.appengine.api.modules.ModulesService;
+import com.google.appengine.api.modules.ModulesServiceFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import io.User;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +41,6 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
     }
 
     protected void doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
-        ImagePusher ip = new ImagePusher();
         UserService userService = UserServiceFactory.getUserService();
         String askResponse = request.getParameter("askResponse");
         String user = "TEST";
@@ -100,8 +103,29 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
             response.getWriter().write(ret);
         }else if(askResponse.toLowerCase().equals("img")){
             log.info("Redirecting image response to python app");
-            String out = handleImageReturn(translateUser(user), new ImageURL((int)Double.parseDouble(request.getParameter("x")),(int)Double.parseDouble(request.getParameter("y")),request.getParameter("data"),request.getParameter("urn")), Integer.parseInt(request.getParameter("id")));
-            response.getWriter().write(out);
+            Word active = userList.get(translateUser(user)).getActiveWord();
+            int x = (int)Double.parseDouble(request.getParameter("x"));
+            int y = (int)Double.parseDouble(request.getParameter("y"));
+            String imgURL = request.getParameter("data");
+            String urn = request.getParameter("urn");
+            int cn = Integer.parseInt(request.getParameter("id"));
+            int ln = active.getLineNo();
+            int wn = active.getWordNo();
+            ModulesService m = ModulesServiceFactory.getModulesService();
+            Queue queue = QueueFactory.getQueue("img-queue");
+            String CHARSET = java.nio.charset.StandardCharsets.UTF_8.name();
+            queue.add(TaskOptions.Builder.withUrl("/")
+                            .param("urn",urn)
+                            .param("line",ln+"")
+                            .param("word", wn+"")
+                            .param("character",cn+"")
+                            .param("x",x+"")
+                            .param("y",y+"")
+                            .param("user",user)
+                            .param("imgURL",imgURL)
+            );
+            response.sendRedirect("/");
+            response.getWriter().write("");
         } else {
             String type = request.getParameter("type");
             if(type == null){
@@ -130,11 +154,6 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
         response.getWriter().write("urn:cite2:hmt:vaimg.v1:VA012RN_0013");       // Write response body.
         //System.out.println(text);
     }
-
-    private String handleImageReturn(int user, ImageURL img, int id) throws IOException{
-        return userList.get(user).sendToImageHandler(img,id);
-    }
-
 
     private String handleLineSelector(int user) {
         //placeholder

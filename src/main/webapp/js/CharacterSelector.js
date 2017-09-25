@@ -266,25 +266,15 @@ function getRelativeCooridnates(group){
 
 function generateURN(group){
     var zoom = canvas.getZoom();
-    canvas.setZoom(1);
     var doc = canvas.getObjects()[0];
     var docHeight = doc.height;
-    console.log("docHeight: " + docHeight);
     var docWidth = doc.width;
-    console.log("docWidth: " + docWidth);
     var outWidth = Math.round(((group.width+4)/docWidth)*10000)/10000;
-    console.log("outWidth: " + outWidth);
     var outHeight = Math.round(((group.height+4)/docHeight)*10000)/10000;
-    console.log("outHeight: " + outHeight);
     var xy = getRelativeCooridnates(group);
-    console.log("X: " + xy[0]);
-    console.log("Y: " + xy[1]);
     var outX = Math.round(((xy[0]-2)/docWidth)*10000)/10000;
-    console.log("outX: " + outX);
     var outY = Math.round(((xy[1]-2)/docHeight)*10000)/10000;
-    console.log("outX: " + outY);
     var plainUrn = imgUrn.split("@")[0];
-    console.log('plainUrn +"@"+outX+","+outY+","+outWidth+","+outHeight: ' + plainUrn +"@"+outX+","+outY+","+outWidth+","+outHeight);
     canvas.setZoom(zoom);
     return plainUrn +"@"+outX+","+outY+","+outWidth+","+outHeight;
 }
@@ -298,16 +288,20 @@ $("#submitButton").click(function() {
     var yArray = [];
     for(var x = 0; x < annotationList.length; x++) {
         if (annotationList[x].group.getObjects().length > 0) {
+            annotationList[x].group.forEachObject(function(path) {path.stroke = 'black';});
             var temp = getRelativeCooridnates(annotationList[x].group);
             xArray[x] = temp[0];
+            console.log(xArray[x]);
             yArray[x] = temp[1];
+            console.log(yArray[x]);
             outArray.push(generateURN(annotationList[x].group));
         }else{
             annotationList.splice(x, 1);
             x--;
         }
     }
-    console.log(JSON.stringify(outArray))
+    canvas.setZoom(1.01);
+    canvas.setZoom(1);
     submitPost(0,outArray,xArray,yArray);
 });
 
@@ -316,14 +310,14 @@ function submitPost(x,outArray,xArray,yArray){
     if(x === annotationList.length){
         $.post("URNServlet", {
             askResponse: "res",
-            annotation: $('#full_text_annotation').attr("value"),
+            annotation: $('#full_text_annotation').val(),
             type:"char",
             data: JSON.stringify(outArray)
         },function(responseText){
             if(responseText === "TRUE") {
-                //location.reload();
+                location.reload();
             }else{
-                //window.location = "/index.html";
+                window.location = "/index.html";
             }
         });
     }else{
@@ -331,7 +325,7 @@ function submitPost(x,outArray,xArray,yArray){
         $.post("URNServlet",{
             askResponse: "img",
             urn:imgUrn,
-            id:x+1,
+            id:x,
             x:xArray[x],
             y:yArray[x],
             data:imgRet
