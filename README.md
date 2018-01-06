@@ -1,0 +1,1 @@
+Still a work in progress, eventually, you will be able to deploy a server running the software fully configured using vagrant, but not quite yet.
