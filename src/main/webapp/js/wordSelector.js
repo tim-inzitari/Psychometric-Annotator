@@ -39,7 +39,7 @@ jQuery(function($){
 
     $.post("URNServlet", {
             askResponse:"ask",
-            type:"wordSelector"
+            type:"wordselector"
         },function(responseText){
         $('#image_imageContainer').hide();
         paramUrn = responseText;
@@ -362,6 +362,8 @@ function setUpUI() {
         }
     } );
 }
+
+
 
 function getTileSources(imgUrn){
     var plainUrn = imgUrn.split("@")[0]

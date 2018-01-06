@@ -7,7 +7,8 @@
 
     <servlet>
         <servlet-name>URNServlet</servlet-name>
-        <servlet-class>URNServlet</servlet-class>
+        <servlet-class>edu.nd.sgrieggs.PsychometricAnnotator.servlet.URNServlet</servlet-class>
+
     </servlet>
     <servlet-mapping>
         <servlet-name>URNServlet</servlet-name>
@@ -16,6 +17,48 @@
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>documents</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+            <role-name>scribe</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <login-config>
+    <auth-method>BASIC</auth-method>
+    <!-- Please note following line .. its commented -->
+    <!-- <realm-name>Admin</realm-name> -->
+    </login-config>
+            <!-- Following section was missing -->
+    <security-role>
+    <role-name>sam</role-name>
+    </security-role>
+
+
+    <context-param>
+        <param-name>tempfile.dir</param-name>
+        <param-value>tmpfiles</param-value>
+    </context-param>
+    <context-param>
+        <param-name>database.JDBC_DRIVER</param-name>
+        <param-value>com.mysql.jdbc.Driver</param-value>
+    </context-param>
+    <context-param>
+        <param-name>database.DB_LOC</param-name>
+        <param-value>jdbc:mysql://localhost:3307/documents</param-value>
+    </context-param>
+    <context-param>
+        <param-name>database.DB_USER</param-name>
+        <param-value>software</param-value>
+    </context-param>
+    <context-param>
+        <param-name>database.password</param-name>
+        <param-value>it doesn't matter how secure this password is, because the database will be restricted to only allow local connections</param-value>
+    </context-param>
 
 
 </web-app>

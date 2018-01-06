@@ -1,0 +1,882 @@
+package edu.nd.sgrieggs.PsychometricAnnotator.io;
+
+import edu.nd.sgrieggs.PsychometricAnnotator.bo.obj.*;
+
+import java.sql.*;
+import java.util.logging.Logger;
+
+
+
+/**
+ * Created by smgri on 6/28/2017.
+ */
+public class User {
+
+
+
+    private static final Logger log = Logger.getLogger(User.class.getName());
+    private String user;
+    private Letter activeLetter;
+    private Line activeLine;
+    private Page activePage;
+    private Word activeWord;
+
+
+    public User(String user, int ID){
+        log.info("Connecting to database...");
+        //this.pass = System.getProperty("cred");
+        this.user = user;
+        initializeDB();
+        this.activePage = null;
+        this.activeLine = null;
+        this.activeWord = null;
+        this.activeLetter = null;
+    }
+
+    public String toString(){
+        return "User: " + user;
+    }
+
+    public String getNextPage(){
+        System.out.println("Something is working... " + user);
+        if(this.activePage != null){
+            return this.activePage.getURN();
+        }else{
+            loadPageDB();
+            if(this.activePage != null) {
+                return this.activePage.getURN();
+            }
+        }
+        return null;
+    }
+
+    public String getNextLine(){
+        if(this.activeLine != null){
+            return this.activeLine.getURN();
+        }else{
+            loadLineDB();
+            if(this.activeLine != null) {
+                return this.activeLine.getURN();
+            }
+        }
+        return null;
+    }
+
+    public String getNextWord(){
+        if(this.activeWord != null){
+            return this.activeWord.getURN();
+        }else{
+            loadWordDB();
+            if(this.activeWord != null){
+                return this.activeWord.getURN();
+            }
+            return null;
+        }
+    }
+
+    public Word getActiveWord(){
+        return this.activeWord;
+    }
+
+    public String getNextLetter(){
+        loadLetterDB();
+        if (this.activeLetter != null) {
+            return this.activeLetter.getURN();
+        } else {
+            return null;
+        }
+    }
+
+    public boolean returnPage(String[] plines){
+        System.out.println("duch");
+        System.out.println(this.activePage);
+        System.out.println("oh");
+        System.out.println(this.activePage.getID());
+        System.out.println("MAYBE....");
+        saveLinesDB(this.activePage.getID(), plines);
+        System.out.println("¯\\_(ツ)_/¯");
+        return hasPageDB();
+    }
+
+    public boolean returnLine(String[] lwords){
+        saveWordsDB(this.activeLine.getDocID(),this.activeLine.getLineNo(),lwords);
+        return hasLineDB();
+    }
+
+    public boolean returnWord(String annotation, String[] wletters) {
+        saveLettersDB(this.activeWord.getDocID(),this.activeWord.getLineNo(), this.activeWord.getWordNo(),annotation,wletters);
+        return hasWordDB();
+    }
+
+    public boolean returnLetter(int timer, String annotation, int difficulty){
+        saveAnnotationDB(timer,annotation,difficulty);
+        return hasLetterDB();
+    }
+
+    public boolean[] initalCheck(){
+        boolean out[] = new boolean[4];
+        out[0] = hasPageDB();
+        out[1] = hasLineDB();
+        out[2] = hasWordDB();
+        out[3] = hasLetterDB();
+        return out;
+    }
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    //DB functions below!
+    //////////////////////////////////////////////////////////////////////////////////////
+
+    private Connection getConnection(){
+        try {
+                Class.forName(DocumentDatabase.getJdbcDriver());
+                System.out.println(DocumentDatabase.getDbLoc());
+                return DriverManager.getConnection(DocumentDatabase.getDbLoc(),DocumentDatabase.getDbUser(), DocumentDatabase.getDbPassword());
+        }catch(Exception e){
+            log.severe("Exception while getting the connection: " + e.getMessage());
+        }
+        return null;
+    }
+
+
+    private String sanitize(String input){
+        return input.toUpperCase().replaceAll("[^a-zA-Z]", "");
+    }
+
+    private void initializeDB(){
+        Connection dbc = null;
+        PreparedStatement checkTrans = null;
+        PreparedStatement addTrans = null;
+        ResultSet checkTransRes = null;
+        String dbTrans = sanitize(user);
+        try {
+            dbc = getConnection();
+            String  checkTransSQL = "SELECT COUNT(*) FROM trans WHERE ID = ?";
+            checkTrans = dbc.prepareStatement(checkTransSQL);
+            checkTrans.setString(1,dbTrans);
+            checkTransRes =  checkTrans.executeQuery();
+            int count = 0;
+            if(checkTransRes.next()) {
+                count = checkTransRes.getInt(1);
+            }
+            checkTransRes.close();
+            if(count == 0){
+                String addTransSQL = "INSERT IGNORE INTO trans(ID) VALUES (?)";
+                addTrans = dbc.prepareStatement(addTransSQL);
+                addTrans.setString(1,dbTrans);
+                addTrans.executeUpdate();
+                addTrans.close();
+                log.info("User: " + user + " was added to the database.");
+            }
+            checkTransRes.close();
+            checkTrans.close();
+        }catch(Exception e){
+            e.printStackTrace();
+            log.severe("Exception during initialization: " + e.getMessage());
+        }finally{
+            try {
+                if (checkTrans != null) {
+                    checkTrans.close();
+                }
+            } catch(SQLException se){
+                se.printStackTrace();
+            }
+            try {
+                if (addTrans != null) {
+                    addTrans.close();
+                }
+            } catch(SQLException se){
+                se.printStackTrace();
+            }
+            try {
+                if (checkTransRes != null) {
+                    checkTransRes.close();
+                }
+            } catch(SQLException se){
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch(SQLException se){
+                se.printStackTrace();
+            }
+
+        }
+    }
+
+    private void loadPageDB() {
+        System.out.println("is this working?....");
+        Connection dbc = null;
+        PreparedStatement loadPage = null;
+        ResultSet loadPageRes = null;
+        try {
+            dbc = getConnection();
+            String loadPageSQL = "SELECT ID,URN \n" +
+                    "FROM doc \n" +
+                    "WHERE used = false \n" +
+                    "ORDER BY RAND() LIMIT 1";
+            loadPage = dbc.prepareStatement(loadPageSQL);
+            loadPageRes = loadPage.executeQuery();
+            if (loadPageRes.next()) {
+                this.activePage = new Page(loadPageRes.getInt(1), loadPageRes.getString(2));
+                System.out.println(this.activePage);
+            }
+            loadPageRes.close();
+            loadPage.close();
+            dbc.close();
+        } catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (loadPageRes != null) {
+                    loadPageRes.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (loadPage != null) {
+                    loadPage.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+
+        }
+    }
+
+    private void saveLinesDB(int page, String[] lines){
+        //System.out.println("You should see this.");
+        Connection dbc = null;
+        PreparedStatement saveLines = null;
+        PreparedStatement usePage = null;
+        System.out.println("ummm.");
+        try {
+            dbc = getConnection();
+            String saveLinesSQL = "INSERT IGNORE INTO line (docID,lineNo,URN) VALUES (?,?,?)";
+            saveLines = dbc.prepareStatement(saveLinesSQL);
+            for(int x = 0; x < lines.length; x++){
+                saveLines.setInt(1,page);
+                saveLines.setInt(2,x);
+                saveLines.setString(3,lines[x]);
+                saveLines.executeUpdate();
+            }
+            saveLines.close();
+            String usePageSQL = "UPDATE doc SET used = true WHERE ID = ?";
+            usePage = dbc.prepareStatement(usePageSQL);
+            usePage.setInt(1,this.activePage.getID());
+            usePage.executeUpdate();
+            usePage.close();
+            dbc.close();
+            this.activePage = null;
+            System.out.println("You should see this too.");
+        }catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (saveLines != null) {
+                    saveLines.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (usePage != null) {
+                    usePage.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+        }
+    }
+
+    private void loadLineDB(){
+        Connection dbc = null;
+        PreparedStatement loadLine = null;
+        ResultSet loadLineRes = null;
+        try {
+            dbc = getConnection();
+
+            String loadLineSQL = "SELECT * \n" +
+                    "FROM line\n" +
+                    "WHERE used = false\n" +
+                    "ORDER BY RAND() LIMIT 1";
+            loadLine = dbc.prepareStatement(loadLineSQL);
+            loadLineRes = loadLine.executeQuery();
+
+            if (loadLineRes.next()) {
+                this.activeLine = new Line(loadLineRes.getInt(1), loadLineRes.getInt(2),loadLineRes.getString(3));
+            }else{
+                log.info(loadLineSQL+" resulted in no return");
+            }
+            log.info("["+this.activeLine.getDocID() + " , " + this.activeLine.getLineNo() + "]:" + this.activeLine.getURN());
+            loadLineRes.close();
+            loadLine.close();
+            dbc.close();
+        } catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (loadLineRes != null) {
+                    loadLineRes.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (loadLine != null) {
+                    loadLine.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+
+        }
+    }
+
+    private void saveWordsDB(int page, int line, String[] words){
+        Connection dbc = null;
+        PreparedStatement saveWords = null;
+        PreparedStatement deactivateLine = null;
+        try{
+            dbc = getConnection();
+            String saveWordsSQL = "INSERT IGNORE INTO word (docID,lineNo,wordNo,URN) VALUES (?,?,?,?)";
+            saveWords = dbc.prepareStatement(saveWordsSQL);
+            for(int x = 0; x < words.length; x ++){
+                saveWords.setInt(1,page);
+                saveWords.setInt(2,line);
+                saveWords.setInt(3,x);
+                saveWords.setString(4,words[x]);
+                saveWords.executeUpdate();
+            }
+            saveWords.close();
+            String deactivateLineSQL = "UPDATE line SET used = true WHERE docID = ? AND lineNo = ?";
+            deactivateLine = dbc.prepareStatement(deactivateLineSQL);
+            deactivateLine.setInt(1,page);
+            deactivateLine.setInt(2,line);
+            deactivateLine.executeUpdate();
+            deactivateLine.close();
+            dbc.close();
+            this.activeLine = null;
+        } catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (saveWords != null) {
+                    saveWords.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (deactivateLine != null) {
+                    deactivateLine.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+        }
+    }
+
+    private void loadWordDB(){
+        Connection dbc = null;
+        PreparedStatement loadWord = null;
+        ResultSet loadWordRes = null;
+        Page out = null;
+        try {
+            dbc = getConnection();
+            String loadWordSQL = "SELECT * \n" +
+                    "FROM word\n" +
+                    "WHERE used = false\n" +
+                    "ORDER BY RAND() LIMIT 1";
+            loadWord = dbc.prepareStatement(loadWordSQL);
+            loadWordRes = loadWord.executeQuery();
+            if (loadWordRes.next()) {
+                this.activeWord = new Word(loadWordRes.getInt(1), loadWordRes.getInt(2), loadWordRes.getInt(3),loadWordRes.getString(4),loadWordRes.getString(5));
+            }
+            loadWordRes.close();
+            loadWord.close();
+            dbc.close();
+        } catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (loadWordRes != null) {
+                    loadWordRes.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (loadWord != null) {
+                    loadWord.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+
+        }
+    }
+
+    private void saveLettersDB(int page, int line, int word, String annotation, String[] letters){
+        Connection dbc = null;
+        PreparedStatement saveLetters = null;
+        PreparedStatement deactivateWord = null;
+        try{
+            dbc = getConnection();
+            String saveLettersSQL = "INSERT IGNORE INTO letter (docID,lineNo,wordNo,letterNo,URN) VALUES (?,?,?,?,?)";
+            saveLetters = dbc.prepareStatement(saveLettersSQL);
+            for(int x = 0; x < letters.length; x++){
+                saveLetters.setInt(1,page);
+                saveLetters.setInt(2,line);
+                saveLetters.setInt(3,word);
+                saveLetters.setInt(4,x);
+                saveLetters.setString(5,letters[x]);
+                saveLetters.executeUpdate();
+            }
+            saveLetters.close();
+            String deactivateWordSQL = "UPDATE word SET used = true, annotation = ? WHERE docID = ? AND lineNo = ? AND wordNo = ?";
+            deactivateWord = dbc.prepareStatement(deactivateWordSQL);
+            deactivateWord.setString(1,annotation);
+            deactivateWord.setInt(2,page);
+            deactivateWord.setInt(3,line);
+            deactivateWord.setInt(4,word);
+            deactivateWord.executeUpdate();
+            deactivateWord.close();
+            dbc.close();
+            this.activeWord = null;
+        } catch (SQLException se) {
+            log.severe("SQL Exception (saving letters): " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (saveLetters != null) {
+                    saveLetters.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (deactivateWord != null) {
+                    deactivateWord.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+        }
+
+    }
+
+    private void loadLetterDB(){
+        Connection dbc = null;
+        PreparedStatement loadLetter = null;
+        ResultSet loadLetterRes = null;
+        try {
+            dbc = getConnection();
+            String loadLetterSQL = "SELECT l.* " +
+                    "FROM letter l " +
+                    "WHERE NOT EXISTS (SELECT a.* FROM annotation a WHERE a.transID = ? AND a.docID = l.docID AND a.lineNo = l.lineNo AND a.wordNo = l.wordNo AND a.letterNo = l.letterNo) " +
+                    "ORDER BY RAND() LIMIT 1 ";
+            loadLetter = dbc.prepareStatement(loadLetterSQL);
+            loadLetter.setString(1, sanitize(this.user));
+            loadLetterRes = loadLetter.executeQuery();
+            if (loadLetterRes.next()) {
+                this.activeLetter = new Letter(sanitize(this.user), loadLetterRes.getInt(1), loadLetterRes.getInt(2), loadLetterRes.getInt(3),loadLetterRes.getInt(4),loadLetterRes.getString(5),"");
+            }
+            loadLetterRes.close();
+            loadLetter.close();
+            dbc.close();
+        } catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (loadLetterRes != null) {
+                    loadLetterRes.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (loadLetter != null) {
+                    loadLetter.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+
+        }
+    }
+
+    private void saveAnnotationDB(int timer, String annotation, int difficulty){
+        Connection dbc = null;
+        PreparedStatement saveAnnotation = null;
+        PreparedStatement getCount = null;
+        ResultSet getCountRes = null;
+        try{
+            dbc = getConnection();
+            String saveAnnotationSQL = "INSERT IGNORE INTO annotation(transID, docID, lineNo, wordNo, letterNo, annoValue, timer, difficulty) VALUES (?,?,?,?,?,?,?,?)";
+            saveAnnotation = dbc.prepareStatement(saveAnnotationSQL);
+            saveAnnotation.setString(1,sanitize(this.user));
+            saveAnnotation.setInt(2,this.activeLetter.getDocID());
+            saveAnnotation.setInt(3,this.activeLetter.getLineNo());
+            saveAnnotation.setInt(4,this.activeLetter.getWordNo());
+            saveAnnotation.setInt(5,this.activeLetter.getLetterNo());
+            saveAnnotation.setString(6,annotation);
+            saveAnnotation.setInt(7,timer);
+            saveAnnotation.setInt(8,difficulty);
+
+            saveAnnotation.executeUpdate();
+            this.activeLetter = null;
+        } catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        }finally {
+            try {
+                if (saveAnnotation != null) {
+                    saveAnnotation.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+
+        }
+
+
+    }
+
+    private boolean hasPageDB(){
+        Connection dbc = null;
+        PreparedStatement loadPage = null;
+        ResultSet loadPageRes = null;
+        boolean out = false;
+        try {
+            dbc = getConnection();
+            String loadPageSQL = "SELECT ID,URN \n" +
+                    "FROM doc \n" +
+                    "WHERE used = false \n" +
+                    "ORDER BY RAND() LIMIT 1";
+            loadPage = dbc.prepareStatement(loadPageSQL);
+            loadPageRes = loadPage.executeQuery();
+            if (loadPageRes.next()) {
+                out = true;
+            }
+            loadPageRes.close();
+            loadPage.close();
+            dbc.close();
+        } catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (loadPageRes != null) {
+                    loadPageRes.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (loadPage != null) {
+                    loadPage.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            return out;
+
+        }
+    }
+
+    private boolean hasLineDB(){
+        Connection dbc = null;
+        PreparedStatement loadLine = null;
+        ResultSet loadLineRes = null;
+        boolean out = false;
+        try {
+            dbc = getConnection();
+            String loadLineSQL = "SELECT * \n" +
+                    "FROM line\n" +
+                    "WHERE used = false\n" +
+                    "ORDER BY RAND() LIMIT 1";
+            loadLine = dbc.prepareStatement(loadLineSQL);
+            loadLineRes = loadLine.executeQuery();
+            if (loadLineRes.next()) {
+                out = true;
+            }
+            loadLineRes.close();
+            loadLine.close();
+            dbc.close();
+        } catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (loadLineRes != null) {
+                    loadLineRes.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (loadLine != null) {
+                    loadLine.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            return out;
+        }
+    }
+
+    private boolean hasWordDB(){
+        Connection dbc = null;
+        PreparedStatement loadWord = null;
+        ResultSet loadWordRes = null;
+        boolean out = false;
+        try {
+            dbc = getConnection();
+            String loadWordSQL = "SELECT * \n" +
+                    "FROM word\n" +
+                    "WHERE used = false\n" +
+                    "ORDER BY RAND() LIMIT 1";
+            loadWord = dbc.prepareStatement(loadWordSQL);
+            loadWordRes = loadWord.executeQuery();
+            if (loadWordRes.next()) {
+                out = true;
+            }
+            loadWordRes.close();
+            loadWord.close();
+            dbc.close();
+        } catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+        } catch (Exception e) {
+            log.info("Got an exception. " + e.getMessage());
+        } finally {
+            try {
+                if (loadWordRes != null) {
+                    loadWordRes.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (loadWord != null) {
+                    loadWord.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            return out;
+        }
+    }
+
+    private boolean hasLetterDB(){
+        Connection dbc = null;
+        PreparedStatement loadLetter = null;
+        ResultSet loadLetterRes = null;
+        boolean out = false;
+        try {
+            dbc = getConnection();
+            String loadLetterSQL = "SELECT l.* " +
+                    "FROM letter l " +
+                    "WHERE NOT EXISTS (SELECT a.* FROM annotation a WHERE a.transID = ? AND a.docID = l.docID AND a.lineNo = l.lineNo AND a.wordNo = l.wordNo AND a.letterNo = l.letterNo) " +
+                    "ORDER BY RAND() LIMIT 1 ";
+            String loadLetterSQLi = "SELECT * \n" +
+                    "FROM letter\n" +
+                    "WHERE transID = ? AND annotation IS NULL\n" +
+                    "ORDER BY RAND() LIMIT 1";
+            loadLetter = dbc.prepareStatement(loadLetterSQL);
+            loadLetter.setString(1, sanitize(this.user));
+            loadLetterRes = loadLetter.executeQuery();
+            if (loadLetterRes.next()) {
+                out = true;
+            }
+            loadLetterRes.close();
+            loadLetter.close();
+            dbc.close();
+        } catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (loadLetterRes != null) {
+                    loadLetterRes.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (loadLetter != null) {
+                    loadLetter.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            return out;
+        }
+    }
+
+
+}

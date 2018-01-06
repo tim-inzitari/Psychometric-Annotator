@@ -8,10 +8,12 @@
 var canvas  = null;
 var activeAnnotation = 0;
 var annotationList = [];
-var redo = null;
+var annotationChars = [];
+var classList = ["a","b","c","d","e","f","g","h","i","l","m","n","o","p","q","r","s","t","u","x","y","z","~","ⴈ","ꝑ","ꝓ", "ꝗ","ꝝ","ꝩ","ꝯ","dot","semi","_","'","other"];
 var colorList =  ["#f23568","#6d38ff","#38ffd7","#fff238","#661641","#275fb3","#24a669","#a67b24","#ff38a2",
     "#194973","#35f268","#7f441c","#801c79","#2a8ebf","#216616","#d97330","#da32e6","#196d73","#bdff38","#bf3e2a",
     "#3d1973","#30cdd9","#858c1f","#661616"];
+
 
 
 // var viewer = null;
@@ -45,12 +47,13 @@ jQuery(function($){
     // imageDrawer();
     $.post("URNServlet", {
         askResponse:"ask",
-        type:"characterSelector"
+        type:"characterselector"
     },function(responseText){
         paramUrn = responseText;
         imgUrn = paramUrn;
         console.log(imgUrn);
         imageDrawer();
+        initializeKeyboad(this);
     });
 });
 
@@ -62,6 +65,7 @@ function imageDrawer(){
 
     canvas.onChange = canvas.renderAll.bind(canvas)
     annotationList.push(new Annotation(1,new fabric.Group()));
+    annotationChars.push(null);
     canvas.add(annotationList[0].group);
     canvas.backgroundColor = 'black';
     canvas.on('path:created', function(e){
@@ -149,6 +153,7 @@ $('#new_annotation_button').click(function(){
     var size = annotationList.length;
     console.log("Adding Annotation # " + size);
     annotationList.splice(activeAnnotation+1,0, new Annotation(activeAnnotation+1,new fabric.Group()));
+    annotationChars.splice(activeAnnotation+1,0, null);
     canvas.add(annotationList[activeAnnotation+1].group);
     $('#active_annotation').append(
         $('<option></option>').val(size+1).html(size+1)
@@ -162,6 +167,7 @@ $('#new_annotation_button').click(function(){
     $("#image_urnList").append(newLI);
     $("#"+size).css("background-color",colorList[size % colorList.length]);
     changeAnnotation(activeAnnotation+1);
+
 });
 
 
@@ -226,11 +232,34 @@ function unhighlightAnno(anno){
     rerenderThatActuallyWorks();
 }
 
+function setAnnoChar(index){
+
+    var out = classList[index];
+    if(out === "ꝝ"){
+        annotationChars[activeAnnotation] = "ꝝ";
+        $('#'+activeAnnotation).text("ℽ");
+    }else if( out === "semi"){
+        annotationChars[activeAnnotation] = ";";
+        $('#'+activeAnnotation).text(";");
+    }else if( out === "dot"){
+        $('#'+activeAnnotation).text(".");
+        annotationChars[activeAnnotation] =  "."
+    }else if( out === "other"){
+        $('#'+activeAnnotation).text("other");
+        annotationChars[activeAnnotation] =  "?"
+    }
+    else{
+        annotationChars[activeAnnotation] = out;
+        $('#'+activeAnnotation).text(out);
+    }
+}
+
 $("#delete_active_annotation").click(function(){
     clearAnnotation(activeAnnotation);
     if(annotationList.length > 1) {
         canvas.remove(annotationList[activeAnnotation]);
         annotationList.splice(activeAnnotation, 1);
+        annotationChars.splice(activeAnnotation, 1);
         $('#' + activeAnnotation).remove();
         for (var x = activeAnnotation; x <= annotationList.length; x++) {
             $('#' + x).text(x);
@@ -279,38 +308,85 @@ function generateURN(group){
     return plainUrn +"@"+outX+","+outY+","+outWidth+","+outHeight;
 }
 
+function initializeKeyboad(){
+    var target = $("#annoKeyboard");
+    console.log(classList.length)
+    for(var x = 0; x < classList.length; x++){
+        target.append("<img src=\"buttons/"+classList[x]+".png\" id = \""+classList[x]+"\" onclick = \"setAnnoChar("+x+")\" border=\"1\">");
+    }
+}
 
-$("#submitButton").click(function() {
-    $('#image_imageContainer').hide();
-    canvas.setZoom(1);
-    var outArray = [];
-    var xArray = [];
-    var yArray = [];
-    for(var x = 0; x < annotationList.length; x++) {
-        if (annotationList[x].group.getObjects().length > 0) {
-            annotationList[x].group.forEachObject(function(path) {path.stroke = 'black';});
-            var temp = getRelativeCooridnates(annotationList[x].group);
-            xArray[x] = temp[0];
-            console.log(xArray[x]);
-            yArray[x] = temp[1];
-            console.log(yArray[x]);
-            outArray.push(generateURN(annotationList[x].group));
-        }else{
-            annotationList.splice(x, 1);
-            x--;
+
+function buildAnnoString(){
+    console.log(annotationChars.length);
+    var temp = [];
+    for(var x = 0; x < annotationChars.length; x++){
+        if(annotationChars[x] === null){
+            temp[x]="-";
+        } else if(annotationChars[x] === "ꝝ"){
+            temp[x] = "ℽ"
+        } else{
+            temp[x] = annotationChars[x]
         }
     }
-    canvas.setZoom(1.01);
-    canvas.setZoom(1);
-    submitPost(0,outArray,xArray,yArray);
+    return temp.join("");
+}
+
+function validateAnnoString(){
+    for(var x = 0; x < annotationChars.length; x++){
+        if(annotationChars[x] === null){
+            window.alert("Please select a character for the positions marked by dashes: " + buildAnnoString());
+            return false;
+        }
+    }
+    return true;
+}
+
+function validateAnnoImage(){
+    for(var x = 0; x < annotationList.length; x++){
+        if(annotationList[x].group.getObjects().length <= 0){
+            window.alert("Black annotation at position " + (x+1));
+            return false;
+        }
+    }
+    return true;
+}
+
+$("#submitButton").click(function() {
+    if(validateAnnoString() & validateAnnoImage()) {
+        $('#image_imageContainer').hide();
+        canvas.setZoom(1);
+        var outArray = [];
+        var xArray = [];
+        var yArray = [];
+        for (var x = 0; x < annotationList.length; x++) {
+            if (annotationList[x].group.getObjects().length > 0) {
+                annotationList[x].group.forEachObject(function (path) {
+                    path.stroke = 'black';
+                });
+                var temp = getRelativeCooridnates(annotationList[x].group);
+                xArray[x] = temp[0];
+                yArray[x] = temp[1];
+                outArray.push(generateURN(annotationList[x].group));
+            } else {
+                annotationList.splice(x, 1);
+                annotationChars.splice(x, 1);
+                x--;
+            }
+        }
+        canvas.setZoom(1.01);
+        canvas.setZoom(1);
+        submitPost(0, outArray, xArray, yArray);
+    }
 });
+
 
 function submitPost(x,outArray,xArray,yArray){
     canvas.setZoom(1);
     if(x === annotationList.length){
         $.post("URNServlet", {
             askResponse: "res",
-            annotation: $('#full_text_annotation').val(),
+            annotation: buildAnnoString(),
             type:"char",
             data: JSON.stringify(outArray)
         },function(responseText){

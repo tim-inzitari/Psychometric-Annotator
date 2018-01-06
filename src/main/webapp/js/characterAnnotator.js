@@ -1,25 +1,9 @@
 /* Defaults and Globals */
 
 var viewer = null;
-
-var defaultServerPath = "http://www.homermultitext.org/iipsrv?DeepZoom=/project/homer/pyramidal/VenA/";
-var defaultServerSuffix = ".tif.dzi";
-var defaultLocalpath = "image_archive/";
-var defaultUrn = "";
-
-
-var serverPath = defaultServerPath;
-var serverSuffix = defaultServerSuffix;
-var localPath = defaultLocalpath;
-var localSuffix = ".dzi";
-var usePath = localPath;
-var useSuffix = localSuffix;
-
-var useLocal = true;
-
+var classList = ["a","b","c","d","e","f","g","h","i","l","m","n","o","p","q","r","s","t","u","x","y","z","~","ⴈ","ꝑ","ꝓ", "ꝗ","ꝝ","ꝩ","ꝯ","dot","_","\'","semi","other"];
+var anno = "";
 var imgUrn;
-
-var roiArray = [];
 var startTime;
 //var tsrc = getTileSource
 
@@ -36,6 +20,7 @@ jQuery(function($){
         askResponse:"ask",
         type:"charAnn"
     },function(responseText){
+        initializeKeyboad();
         paramUrn = responseText;
         setUpUI();
         imgUrn = paramUrn;
@@ -44,6 +29,37 @@ jQuery(function($){
     });
 });
 
+function setAnnoChar(index){
+    $('#submitButton').show();
+    var out = classList[index];
+    if(out === "ꝝ"){
+        $("#currentSelection").text("ℽ");
+        anno = "ꝝ";
+    }else if( out === "semi"){
+        $("#currentSelection").text(";");
+        anno = ";"
+    }else if( out === "dot"){
+        $("#currentSelection").text(".");
+        anno = "."
+    }else if( out === "other"){
+        $("#currentSelection").text("other");
+        anno = "?"
+    }
+    else{
+        $("#currentSelection").text(out);
+        anno = out;
+    }
+
+}
+
+function initializeKeyboad(){
+    var target = $("#annoKeyboard");
+    console.log(classList.length)
+    for(var x = 0; x < classList.length; x++){
+        target.append("<img src=\"buttons/"+classList[x]+".png\" id = \""+classList[x]+"\" onclick = \"setAnnoChar("+x+")\" border=\"1\">");
+    }
+}
+
 function setUpUI(){
     $('#loadImageButton').show();
 
@@ -51,6 +67,7 @@ function setUpUI(){
 
 function imageDrawer(){
     canvas = new fabric.Canvas('image_imageCanvas');
+
     var ctx = canvas.getContext("2d");
     var image = new Image();
     image.onload = function() {
@@ -69,6 +86,7 @@ function imageDrawer(){
                 ctx.rect(x1 - (image.width / 2), y1 - (image.height / 2), width, height);
             }
         });
+
         // ,
         // lockMovementX: true,
         //     lockMovementY: true,
@@ -83,7 +101,7 @@ function imageDrawer(){
         canvas.renderAll();
     }
     image.src = getImageSource(imgUrn);
-    canvas.setZoom(10);
+    canvas.setZoom(3);
     canvas.renderAll();
 }
 
@@ -117,15 +135,16 @@ $('#loadImageButton').click(function() {
     $('#image_imageContainer').show();
     $('#loadImageButton').hide();
     $('#input_form').show();
+    $('#submitButton').hide();
     startTime = new Date().getTime();
 });
 
-$(submitButton).click(function() {
+$('#submitButton').click(function() {
     $.post("URNServlet", {
         askResponse: "res",
         type:"anno",
         timer: new Date().getTime() - startTime,
-        annotation: $('#annobox').val(),
+        annotation: anno,
         difficulty: $('#difficulty_range').val()
     },function(responseText){
         if(responseText === "TRUE") {

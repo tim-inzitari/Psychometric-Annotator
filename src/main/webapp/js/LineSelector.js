@@ -370,7 +370,8 @@ function getTileSources(imgUrn){
     return ts
 }
 
-$(submitButton).click(function() {
+$("#submitButton").click(function() {
+    console.log("here")
     var outArray = new Array(roiArray.length);
     for(x = 0; x < roiArray.length; x++){
         outArray[x] = imgUrn + "@" + roiArray[x].roi;
@@ -380,10 +381,11 @@ $(submitButton).click(function() {
         type:"line",
         data: JSON.stringify(outArray)
     },function(responseText){
+        console.log(responseText)
         if(responseText === "TRUE") {
             location.reload();
         }else{
-            window.location = "/index.html";
+            //window.location = "/index.html";
         }
     });
 });

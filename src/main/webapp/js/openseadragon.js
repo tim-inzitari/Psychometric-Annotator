@@ -12367,13 +12367,13 @@ $.extend( $.IIIFTileSource.prototype, $.TileSource.prototype, /** @lends OpenSea
 
     supports: function( data, url ) {
         // Version 2.0 and forwards
-        if (data.protocol && data.protocol == 'http://iiif.io/api/image') {
+        if (data.protocol && data.protocol == 'http://iiif.edu.nd.sgrieggs.PsychometricAnnotator.io/api/image') {
             return true;
         // Version 1.1
         } else if ( data['@context'] && (
             data['@context'] == "http://library.stanford.edu/iiif/image-api/1.1/context.json" ||
-            data['@context'] == "http://iiif.io/api/image/1/context.json") ) {
-            // N.B. the iiif.io context is wrong, but where the representation lives so likely to be used
+            data['@context'] == "http://iiif.edu.nd.sgrieggs.PsychometricAnnotator.io/api/image/1/context.json") ) {
+            // N.B. the iiif.edu.nd.sgrieggs.PsychometricAnnotator.io context is wrong, but where the representation lives so likely to be used
             return true;
 
         // Version 1.0
@@ -12416,11 +12416,11 @@ $.extend( $.IIIFTileSource.prototype, $.TileSource.prototype, /** @lends OpenSea
         // Try to deduce our version and fake it upwards if needed
         if ( !$.isPlainObject(data) ) {
             var options = configureFromXml10( data );
-            options['@context'] = "http://iiif.io/api/image/1.0/context.json";
+            options['@context'] = "http://iiif.edu.nd.sgrieggs.PsychometricAnnotator.io/api/image/1.0/context.json";
             options['@id'] = url.replace('/info.xml', '');
             return options;
         } else if ( !data['@context'] ) {
-            data['@context'] = 'http://iiif.io/api/image/1.0/context.json';
+            data['@context'] = 'http://iiif.edu.nd.sgrieggs.PsychometricAnnotator.io/api/image/1.0/context.json';
             data['@id'] = url.replace('/info.json', '');
             return data;
         } else {
@@ -12602,7 +12602,7 @@ $.extend( $.IIIFTileSource.prototype, $.TileSource.prototype, /** @lends OpenSea
         var level0Profiles = [
             "http://library.stanford.edu/iiif/image-api/compliance.html#level0",
             "http://library.stanford.edu/iiif/image-api/1.1/compliance.html#level0",
-            "http://iiif.io/api/image/2/level0.json"
+            "http://iiif.edu.nd.sgrieggs.PsychometricAnnotator.io/api/image/2/level0.json"
         ];
         var isLevel0 = (level0Profiles.indexOf(profile[0]) != -1);
         return !isLevel0 || (profile.indexOf("sizeByW") != -1);
