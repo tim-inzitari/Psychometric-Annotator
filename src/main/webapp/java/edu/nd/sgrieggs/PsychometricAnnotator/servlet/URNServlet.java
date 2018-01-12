@@ -26,15 +26,13 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
 
     public void init() {
         log.info("Servlet Loading...");
-        System.out.println("Servlet Loading...");
         userMap = new HashMap<String, Integer>();
         userList = new ArrayList<User>();
-        System.out.println("Success!");
         ctx = getServletContext();
     }
 
     public void destroy() {
-        System.out.println("Boom");
+
     }
 
     protected void doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
@@ -46,16 +44,6 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
         }else{
             user = hashToID(user.hashCode());
         }
-        //System.out.println(request.getUserPrincipal().getName());
-//        if (System.getProperty("com.google.appengine.runtime.version").startsWith("Google App Engine/")) {
-//            user = hashToID(userService.getCurrentUser().getEmail().hashCode());
-//        }else{
-//            Enumeration<String> params = request.getParameterNames();
-//            while(params.hasMoreElements()){
-//                String paramName = params.nextElement();
-//                System.out.println("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
-//            }
-//        }
         log.info("user: " + user + " has just connected");
         response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         response.setHeader("Pragma", "no-cache");
@@ -64,23 +52,20 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
         if (askResponse.toLowerCase().equals("res")) {
             String type = request.getParameter("type").toLowerCase();
             if (type.equals("line")) {
-                System.out.println("YOu SHouLD BE sEE ing dis");
                 String in = request.getParameter("data");
                 boolean out = false;
-//                try{
-                    System.out.println("works here");
+                try{
                     out = handleLineReturn(translateUser(user), in);
-                    System.out.println("probably not here");
-//                }catch(Exception e){
-//                    log.severe("Error handling line return: " + e.getMessage());
-//                    Enumeration<String> params = request.getParameterNames();
-//                    String logMessage = "";
-//                    while(params.hasMoreElements()){
-//                        String paramName = params.nextElement();
-//                        logMessage = logMessage + "Parameter Name - "+paramName+", Value - "+request.getParameter(paramName) + "\n";
-//                    }
-//                    log.severe(logMessage);
-//                }
+                }catch(Exception e){
+                    log.severe("Error handling line return: " + e.getMessage());
+                    Enumeration<String> params = request.getParameterNames();
+                    String logMessage = "";
+                    while(params.hasMoreElements()){
+                        String paramName = params.nextElement();
+                        logMessage = logMessage + "Parameter Name - "+paramName+", Value - "+request.getParameter(paramName) + "\n";
+                    }
+                    log.severe(logMessage);
+                }
                 if (out) {
                     response.getWriter().write("TRUE");
                 } else {
@@ -89,10 +74,12 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
             }
             else if (type.equals("word")) {
                 String in = request.getParameter("data");
+                System.out.println(request.getParameter("lineNo"));
+                int lineNo = Integer.parseInt(request.getParameter("lineNo"));
                 String[] URNs = deStringify(in);
                 boolean out = false;
                 try {
-                    out = handleWordReturn(translateUser(user), in);
+                    out = handleWordReturn(translateUser(user), in, lineNo);
                 }catch(Exception e){
                     log.severe(e.getMessage());
                     Enumeration<String> params = request.getParameterNames();
@@ -113,9 +100,11 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
                 String in = request.getParameter("data");
                 String[] URNs = deStringify(in);
                 String anno = request.getParameter("annotation");
+                int lineNo = Integer.parseInt(request.getParameter("lineNo"));
+                int wordNo = Integer.parseInt(request.getParameter("wordNo"));
                 boolean out = false;
                 try{
-                    out = handleCharacterReturn(translateUser(user), anno, in);
+                    out = handleCharacterReturn(translateUser(user), anno, in, lineNo, wordNo);
                 }catch(Exception e){
                     log.severe(e.getMessage());
                     Enumeration<String> params = request.getParameterNames();
@@ -133,7 +122,13 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
                 }
             }
             else if (type.equals("anno")) {
-                boolean out = handleAnnotationReturn(translateUser(user), Integer.parseInt(request.getParameter("timer")), request.getParameter("annotation"), Integer.parseInt(request.getParameter("difficulty")));
+
+                int lineNo = Integer.parseInt(request.getParameter("lineNo"));
+                int wordNo = Integer.parseInt(request.getParameter("wordNo"));
+                int letterNo = Integer.parseInt(request.getParameter("lineNo"));
+                String urn = request.getParameter("urn");
+
+                boolean out = handleAnnotationReturn(translateUser(user), Integer.parseInt(request.getParameter("timer")), request.getParameter("annotation"), Integer.parseInt(request.getParameter("difficulty")),urn,lineNo,wordNo,letterNo);
                 if (out) {
                     response.getWriter().write("TRUE");
                 } else {
@@ -167,15 +162,12 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
 
 
 
-            //System.out.println(ctx.getAttribute());
-
             LetterSaver saver = new LetterSaver((String)ctx.getAttribute("FILES_DIR"), urn, ln, wn, cn, x, y, user, imgURL);
             if(saver.saveImage()){
                 saver = null;
                 response.getWriter().write("True");
             }else{
                 saver = null;
-                System.out.println("I fucked up");
             }
 
 
@@ -222,7 +214,6 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
         response.setContentType("text/plain");  // Set content type of the response so that jQuery knows what it can expect.
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write("urn:cite2:hmt:vaimg.v1:VA012RN_0013");       // Write response body.
-        //System.out.println(text);
     }
 
     private String handleLineSelector(int user) {
@@ -230,29 +221,23 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
         return userList.get(user).getNextPage();
     }
 
-    private String handleCharacterSelector(int user) {
-        return userList.get(user).getNextWord();
+    private String handleCharacterSelector(int user) { return userList.get(user).getNextWord();
     }
 
 
     private boolean handleLineReturn(int user, String input) {
         User active = userList.get(user);
-        System.out.println(active.toString());
         String[] temp2 = deStringify(input);
-        for(int x = 0; x < temp2.length; x++){
-            System.out.println(x +": " + temp2[x]);
-        }
         boolean test = active.returnPage(temp2);
-        System.out.println("3");
         return test;
     }
 
-    private boolean handleWordReturn(int user, String input) {
-        return userList.get(user).returnLine(deStringify(input));
+    private boolean handleWordReturn(int user, String input, int lineNo) {
+        return userList.get(user).returnLine(deStringify(input),lineNo);
     }
 
-    private boolean handleCharacterReturn(int user, String annotation, String input) {
-        return userList.get(user).returnWord(annotation, deStringify(input));
+    private boolean handleCharacterReturn(int user, String annotation, String input, int lineNo, int wordNo) {
+        return userList.get(user).returnWord(annotation, deStringify(input),lineNo, wordNo);
     }
 
     private String handleWordSelector(int user) {
@@ -265,9 +250,8 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
         return userList.get(user).getNextLetter();
     }
 
-    private boolean handleAnnotationReturn(int user, int timer, String annotation, int difficulty) {
-        return userList.get(user).returnLetter(timer, annotation, difficulty);
-
+    private boolean handleAnnotationReturn(int user, int timer, String annotation, int difficulty, String urn, int lineNo, int wordNo, int letterNo) {
+        return userList.get(user).returnLetter(timer, annotation, difficulty, urn, lineNo, wordNo, letterNo);
     }
 
     private boolean[] handleInitialAsk(int user) {
@@ -275,12 +259,9 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
     }
 
 
-    //it appears there is a problem.
     private int translateUser(String user) {
         Integer out = userMap.get(user.toUpperCase());
-        System.out.println("user: " + user + " out: " + out);
         if (out == null) {
-            System.out.println("noUsers = " + noUsers);
             userMap.put(user, noUsers);
             userList.add(new User(user.toUpperCase(), noUsers));
             out = noUsers++;

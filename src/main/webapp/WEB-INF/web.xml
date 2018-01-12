@@ -49,7 +49,7 @@
     </context-param>
     <context-param>
         <param-name>database.DB_LOC</param-name>
-        <param-value>jdbc:mysql://localhost:3307/documents</param-value>
+        <param-value>jdbc:mysql://localhost:3306/documents</param-value>
     </context-param>
     <context-param>
         <param-name>database.DB_USER</param-name>

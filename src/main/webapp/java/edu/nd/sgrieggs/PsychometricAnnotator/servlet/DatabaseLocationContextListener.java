@@ -1,17 +1,19 @@
 package edu.nd.sgrieggs.PsychometricAnnotator.servlet;
 
 
+import edu.nd.sgrieggs.PsychometricAnnotator.io.DocumentDatabase;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
-import edu.nd.sgrieggs.PsychometricAnnotator.io.DocumentDatabase;
 
+@WebListener
 
 /**
  * Created by smgri on 12/31/2017.
  */
-@WebListener
+
 public class DatabaseLocationContextListener implements ServletContextListener {
 
     @Override

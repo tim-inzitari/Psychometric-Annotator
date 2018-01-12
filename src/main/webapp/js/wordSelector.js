@@ -9,6 +9,7 @@ var defaultServerPath = "http://www.homermultitext.org/iipsrv?DeepZoom=/project/
 var defaultServerSuffix = ".tif.dzi";
 var defaultLocalpath = "image_archive/";
 var defaultUrn = "";
+var lineNo = -1
 
 
 var serverPath = defaultServerPath;
@@ -42,7 +43,11 @@ jQuery(function($){
             type:"wordselector"
         },function(responseText){
         $('#image_imageContainer').hide();
-        paramUrn = responseText;
+        console.log(responseText);
+        var response = responseText.split("-");
+        paramUrn = response[0];
+        lineNo = response[1];
+        console.log(lineNo);
         setUpUI();
         imgUrn = paramUrn;
         initOpenSeadragon();
@@ -387,7 +392,8 @@ $('#submitButton').click(function() {
     $.post("URNServlet", {
         askResponse: "res",
         type:"word",
-        data: JSON.stringify(outArray)
+        data: JSON.stringify(outArray),
+        lineNo: lineNo
     },function(responseText){
         if(responseText === "TRUE") {
             location.reload();

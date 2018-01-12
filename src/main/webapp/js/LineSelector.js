@@ -385,7 +385,7 @@ $("#submitButton").click(function() {
         if(responseText === "TRUE") {
             location.reload();
         }else{
-            //window.location = "/index.html";
+            window.location = "/index.html";
         }
     });
 });

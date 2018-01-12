@@ -38,7 +38,6 @@ public class User {
     }
 
     public String getNextPage(){
-        System.out.println("Something is working... " + user);
         if(this.activePage != null){
             return this.activePage.getURN();
         }else{
@@ -52,11 +51,11 @@ public class User {
 
     public String getNextLine(){
         if(this.activeLine != null){
-            return this.activeLine.getURN();
+            return this.activeLine.getURN()+"-"+this.activeLine.getLineNo();
         }else{
             loadLineDB();
             if(this.activeLine != null) {
-                return this.activeLine.getURN();
+                return this.activeLine.getURN()+"-"+this.activeLine.getLineNo();
             }
         }
         return null;
@@ -64,11 +63,11 @@ public class User {
 
     public String getNextWord(){
         if(this.activeWord != null){
-            return this.activeWord.getURN();
+            return this.activeWord.getURN()+"-"+this.activeWord.getLineNo()+"-"+this.activeWord.getWordNo();
         }else{
             loadWordDB();
             if(this.activeWord != null){
-                return this.activeWord.getURN();
+                return this.activeWord.getURN()+"-"+this.activeWord.getLineNo()+"-"+this.activeWord.getWordNo();
             }
             return null;
         }
@@ -81,34 +80,64 @@ public class User {
     public String getNextLetter(){
         loadLetterDB();
         if (this.activeLetter != null) {
-            return this.activeLetter.getURN();
+            return this.activeLetter.getURN()+"-"+this.activeLetter.getLineNo()+"-"+this.activeLetter.getWordNo()+"-"+this.activeLetter.getLetterNo();
         } else {
             return null;
         }
     }
 
     public boolean returnPage(String[] plines){
-        System.out.println("duch");
-        System.out.println(this.activePage);
-        System.out.println("oh");
-        System.out.println(this.activePage.getID());
-        System.out.println("MAYBE....");
+        String urn = plines[0].split("@")[0];
+        if(!this.activePage.getURN().equals(urn)){
+            int id = this.lookupIdDB(urn);
+            if (id == -1){
+                return true;
+            }else{
+                this.activePage = new Page(id,urn);
+            }
+        }
         saveLinesDB(this.activePage.getID(), plines);
-        System.out.println("¯\\_(ツ)_/¯");
         return hasPageDB();
     }
 
-    public boolean returnLine(String[] lwords){
+    public boolean returnLine(String[] lwords, int lineNo){
+        String urn = lwords[0].split("@")[0];
+        if(lineNo != this.activeLine.getLineNo() || !this.activeLine.getURN().split("@")[0].equals(urn)){
+            int id = this.lookupIdDB(urn);
+            if(id == -1){
+                return true;
+            }else{
+                this.activeLine = new Line(id,lineNo,urn);
+            }
+        }
+        new Line(3,3,"");
         saveWordsDB(this.activeLine.getDocID(),this.activeLine.getLineNo(),lwords);
         return hasLineDB();
     }
 
-    public boolean returnWord(String annotation, String[] wletters) {
+    public boolean returnWord(String annotation, String[] wletters, int lineNo, int wordNo) {
+        String urn = wletters[0].split("@")[0];
+        if(this.activeWord.getLineNo() != lineNo || this.activeWord.getWordNo() != wordNo || !this.activeWord.getURN().split("@")[0].equals(urn)){
+            int id = this.lookupIdDB(urn);
+            if(id == -1){
+                return true;
+            }else{
+                this.activeWord = new Word(id, lineNo, wordNo, urn, null);
+            }
+        }
         saveLettersDB(this.activeWord.getDocID(),this.activeWord.getLineNo(), this.activeWord.getWordNo(),annotation,wletters);
         return hasWordDB();
     }
 
-    public boolean returnLetter(int timer, String annotation, int difficulty){
+    public boolean returnLetter(int timer, String annotation, int difficulty, String urn, int lineNo, int wordNo, int letterNo){
+        if(this.activeLetter.getLineNo() != lineNo || this.activeLetter.getWordNo() != wordNo || this.activeLetter.getLetterNo() != letterNo || this.activeLetter.getURN().split("@")[0].equals(urn.split("@")[0])){
+            int id = this.lookupIdDB(urn.split("@")[0]);
+            if(id == -1){
+                return true;
+            }else{
+                this.activeLetter = new Letter(this.user, id, lineNo, wordNo, letterNo, urn, null);
+            }
+        }
         saveAnnotationDB(timer,annotation,difficulty);
         return hasLetterDB();
     }
@@ -133,7 +162,6 @@ public class User {
     private Connection getConnection(){
         try {
                 Class.forName(DocumentDatabase.getJdbcDriver());
-                System.out.println(DocumentDatabase.getDbLoc());
                 return DriverManager.getConnection(DocumentDatabase.getDbLoc(),DocumentDatabase.getDbUser(), DocumentDatabase.getDbPassword());
         }catch(Exception e){
             log.severe("Exception while getting the connection: " + e.getMessage());
@@ -210,7 +238,6 @@ public class User {
     }
 
     private void loadPageDB() {
-        System.out.println("is this working?....");
         Connection dbc = null;
         PreparedStatement loadPage = null;
         ResultSet loadPageRes = null;
@@ -224,7 +251,6 @@ public class User {
             loadPageRes = loadPage.executeQuery();
             if (loadPageRes.next()) {
                 this.activePage = new Page(loadPageRes.getInt(1), loadPageRes.getString(2));
-                System.out.println(this.activePage);
             }
             loadPageRes.close();
             loadPage.close();
@@ -265,11 +291,9 @@ public class User {
     }
 
     private void saveLinesDB(int page, String[] lines){
-        //System.out.println("You should see this.");
         Connection dbc = null;
         PreparedStatement saveLines = null;
         PreparedStatement usePage = null;
-        System.out.println("ummm.");
         try {
             dbc = getConnection();
             String saveLinesSQL = "INSERT IGNORE INTO line (docID,lineNo,URN) VALUES (?,?,?)";
@@ -288,7 +312,6 @@ public class User {
             usePage.close();
             dbc.close();
             this.activePage = null;
-            System.out.println("You should see this too.");
         }catch (SQLException se) {
             log.severe("SQL Exception: " + se.getMessage());
             se.printStackTrace();
@@ -861,6 +884,59 @@ public class User {
             try {
                 if (loadLetter != null) {
                     loadLetter.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            return out;
+        }
+    }
+
+    private int lookupIdDB(String urn){
+        Connection dbc = null;
+        PreparedStatement loadId = null;
+        ResultSet loadIdRes = null;
+        int out = -1;
+        try {
+            dbc = getConnection();
+            String lookupIdSQL = "SELECT id " +
+                    "FROM doc " +
+                    "WHERE urn = ? ";
+            loadId = dbc.prepareStatement(lookupIdSQL);
+            loadId.setString(1,urn);
+            loadIdRes = loadId.executeQuery();
+            loadIdRes.next();
+            out = loadIdRes.getInt(1);
+            loadIdRes.close();
+            loadId.close();
+            dbc.close();
+        } catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (loadIdRes != null) {
+                    loadIdRes.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (loadId != null) {
+                    loadId.close();
                 }
             } catch (SQLException se) {
                 log.severe("SQL Exception: " + se.getMessage());

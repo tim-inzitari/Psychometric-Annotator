@@ -1,0 +1,9 @@
+#ignore all documents
+**/image_archive
+
+#ignore target
+target
+
+#ignore idea files
+*.iml
+.idea

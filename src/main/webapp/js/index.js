@@ -6,6 +6,7 @@ $(document).ready(function() {
     $.post("URNServlet", {
         askResponse: "init",
     },function(responseText){
+        console.log(responseText)
         var output = responseText.split(",");
         if(output[0] === "TRUE"){
             $('#lines').show();

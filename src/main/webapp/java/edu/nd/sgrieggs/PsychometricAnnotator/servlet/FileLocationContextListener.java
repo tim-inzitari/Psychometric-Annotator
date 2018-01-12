@@ -16,7 +16,7 @@ public class FileLocationContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         //String rootPath = System.getProperty("catalina.home");
         //obviously you need to change this for the real version, but do that back in South Bend.
-        String rootPath = "C:\\Users\\smgri\\Desktop";
+        String rootPath = "/home/sgrieggs/temp";
         ServletContext ctx = servletContextEvent.getServletContext();
         String relativePath = ctx.getInitParameter("tempfile.dir");
         File file = new File(rootPath + File.separator + relativePath);

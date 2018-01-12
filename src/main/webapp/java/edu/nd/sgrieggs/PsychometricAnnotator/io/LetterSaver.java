@@ -29,6 +29,7 @@ public class LetterSaver {
         }else{
             this.urn = urn;
         }
+        this.user = user;
         this.line = line;
         this.word = word;
         this.character = character;
@@ -41,9 +42,9 @@ public class LetterSaver {
 
 
     public boolean saveImage() throws IOException {
-        File imgOut = new File(saveLocation + File.separator + urn + "-"+line+"-"+word+"-"+character+".png");
+        File imgOut = new File(saveLocation + File.separator + user + "-" + urn + "-" + line + "-" + word + "-"+ character+".png");
         System.out.println("attempting to save4");
-        File dataOut = new File(saveLocation + File.separator + urn + "-"+line+"-"+word+"-"+character+".txt");
+        File dataOut = new File(saveLocation + File.separator + user + "-" + urn + "-" + line + "-" + word + "-" + character+".txt");
         System.out.println("attempting to save5");
         if(!imgOut.exists() && ! dataOut.exists()) {
             System.out.println(imgOut.toString());
@@ -79,7 +80,14 @@ public class LetterSaver {
 
     private String url2string(String url){
         String[] out = url.split(";base64,");
-        return out[1];
+        String output = null;
+        try{
+            output = out[1];
+        }catch(Exception e){
+            System.out.println("ERROR: INVALID URL");
+            System.out.println(url);
+        }
+        return output;
     }
 
     private String getDtype(String url){

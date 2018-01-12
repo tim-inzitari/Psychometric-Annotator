@@ -3,6 +3,9 @@
 var viewer = null;
 var classList = ["a","b","c","d","e","f","g","h","i","l","m","n","o","p","q","r","s","t","u","x","y","z","~","ⴈ","ꝑ","ꝓ", "ꝗ","ꝝ","ꝩ","ꝯ","dot","_","\'","semi","other"];
 var anno = "";
+var lineNo = -1;
+var wordNo = -1;
+var letterNo = -1;
 var imgUrn;
 var startTime;
 //var tsrc = getTileSource
@@ -21,7 +24,11 @@ jQuery(function($){
         type:"charAnn"
     },function(responseText){
         initializeKeyboad();
-        paramUrn = responseText;
+        var response = responseText.split("-");
+        paramUrn = response[0];
+        lineNo = response[1];
+        wordNo = response[2];
+        leterNo = response[3];
         setUpUI();
         imgUrn = paramUrn;
         console.log(responseText);
@@ -145,7 +152,11 @@ $('#submitButton').click(function() {
         type:"anno",
         timer: new Date().getTime() - startTime,
         annotation: anno,
-        difficulty: $('#difficulty_range').val()
+        difficulty: $('#difficulty_range').val(),
+        lineNo: lineNo,
+        wordNo: wordNo,
+        letterNo: letterNo,
+        urn: imgUrn
     },function(responseText){
         if(responseText === "TRUE") {
             location.reload();

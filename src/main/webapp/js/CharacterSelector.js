@@ -6,6 +6,8 @@
 
 
 var canvas  = null;
+var wordNo = -1;
+var lineNo = -1;
 var activeAnnotation = 0;
 var annotationList = [];
 var annotationChars = [];
@@ -49,7 +51,13 @@ jQuery(function($){
         askResponse:"ask",
         type:"characterselector"
     },function(responseText){
-        paramUrn = responseText;
+        console.log(responseText);
+        response = responseText.split("-");
+        paramUrn = response[0];
+        lineNo = response[1];
+        wordNo = response[2];
+        console.log("line: " + lineNo);
+        console.log("word: " + wordNo);
         imgUrn = paramUrn;
         console.log(imgUrn);
         imageDrawer();
@@ -388,7 +396,9 @@ function submitPost(x,outArray,xArray,yArray){
             askResponse: "res",
             annotation: buildAnnoString(),
             type:"char",
-            data: JSON.stringify(outArray)
+            data: JSON.stringify(outArray),
+            wordNo: wordNo,
+            lineNo: lineNo
         },function(responseText){
             if(responseText === "TRUE") {
                 location.reload();
@@ -404,7 +414,9 @@ function submitPost(x,outArray,xArray,yArray){
             id:x,
             x:xArray[x],
             y:yArray[x],
-            data:imgRet
+            data:imgRet,
+            wordNo: wordNo,
+            lineNo: lineNo
         },function(){
             submitPost(x+1,outArray,xArray,yArray);
         });
