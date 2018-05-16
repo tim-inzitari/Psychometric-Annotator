@@ -93,7 +93,6 @@ function imageDrawer(){
                 ctx.rect(x1 - (image.width / 2), y1 - (image.height / 2), width, height);
             }
         });
-
         // ,
         // lockMovementX: true,
         //     lockMovementY: true,

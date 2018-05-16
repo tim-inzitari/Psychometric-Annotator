@@ -74,10 +74,10 @@ create table annotation(
 #INSERT INTO doc(ID,URN) VALUES (3,"urn:cite2:hmt:vaimg.v1:VA012RUVD_0894");
 #INSERT INTO doc(ID,URN) VALUES (4,"urn:cite2:hmt:vaimg.v1:VA012RUVD_0895");
 #INSERT INTO doc(ID,URN) VALUES (5,"urn:cite2:hmt:vaimg.v1:VA012VN_0514");
-INSERT INTO doc(ID,URN,height,width) VALUES (0,"urn:cite2:ASAV:vaimg.v1:REG_VAT12_186r",2697,2136);
+INSERT INTO doc(ID,URN,height,width) VALUES (0,"urn:cite2:ecod:vaimg.v1:einstift_018r",2697,2136);
 
 
-INSERT INTO trans(ID) VALUES ("TEST");
+#INSERT INTO trans(ID) VALUES ("TEST");
 
 #INSERT INTO unusedDocuments(docID,transID) VALUES (0,"TEST");
 #INSERT INTO unusedDocuments(docID,transID) VALUES (1,"TEST");

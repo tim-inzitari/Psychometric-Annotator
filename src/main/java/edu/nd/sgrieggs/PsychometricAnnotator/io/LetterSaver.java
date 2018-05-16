@@ -29,6 +29,7 @@ public class LetterSaver {
         }else{
             this.urn = urn;
         }
+        this.urn = this.urn.split("@")[0];
         this.user = user;
         this.line = line;
         this.word = word;

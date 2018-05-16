@@ -9,6 +9,7 @@ var canvas  = null;
 var wordNo = -1;
 var lineNo = -1;
 var activeAnnotation = 0;
+var mainGroup = null;
 var annotationList = [];
 var annotationChars = [];
 var classList = ["a","b","c","d","e","f","g","h","i","l","m","n","o","p","q","r","s","t","u","x","y","z","~","ⴈ","ꝑ","ꝓ", "ꝗ","ꝝ","ꝩ","ꝯ","dot","semi","_","'","other"];
@@ -70,7 +71,9 @@ function imageDrawer(){
     document.getElementById("zoomInput").value = 1;
     document.getElementById("brushInput").value = 1;
     canvas = new fabric.Canvas('image_imageCanvas');
-
+    canvas.on('selection:cleared', function() {
+        cosole.log(";)")
+    });
     canvas.onChange = canvas.renderAll.bind(canvas)
     annotationList.push(new Annotation(1,new fabric.Group()));
     annotationChars.push(null);
@@ -83,6 +86,8 @@ function imageDrawer(){
         canvas.remove(your_path);
         AA.bringToFront();
     });
+    mainGroup = new fabric.Group([],{left: 0, top: 0});
+    canvas.add(mainGroup);
     var ctx = canvas.getContext("2d");
     var image = new Image();
     image.onload = function() {
@@ -91,6 +96,14 @@ function imageDrawer(){
         var y1 = image.height * loc[1];
         var width = image.width * loc[2];
         var height = image.height * loc[3];
+
+        var background = new fabric.Image(image, {
+            left: -x1,
+            top: -y1,
+            angle: 0,
+            opacity: .5
+        });
+
         var imageInstance = new fabric.Image(image, {
             left: -x1,
             top: -y1,
@@ -109,7 +122,8 @@ function imageDrawer(){
             hasBorders: false,
             hasControls: false
         });
-        canvas.add(imageInstance);
+        mainGroup.add(background);
+        mainGroup.addWithUpdate(imageInstance);
         imageInstance.selectable = true;
         canvas.renderAll();
         canvas.isDrawingMode = true;

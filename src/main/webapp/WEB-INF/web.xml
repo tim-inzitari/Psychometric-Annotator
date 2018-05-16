@@ -57,7 +57,7 @@
     </context-param>
     <context-param>
         <param-name>database.password</param-name>
-        <param-value>it doesn't matter how secure this password is, because the database will be restricted to only allow local connections</param-value>
+        <param-value>it doesnt matter how secure this password is, because the database will be restricted to only allow local connections</param-value>
     </context-param>
 
 
