@@ -88,10 +88,27 @@
         padding-bottom:15px;
         font-size: 30pt;
     }
+
+    #vert_scroller{
+        height: 500px;
+    }
+    #hori_Scroller{
+        width: 1250px;
+    }
+
 }
 
 
 @media all and (min-width: 1725px) {
+
+    #vert_scroller{
+        height: 500px;
+    }
+    #hori_Scroller{
+        width: 1250px;
+    }
+
+
     li{
         color: white;
         text-shadow:

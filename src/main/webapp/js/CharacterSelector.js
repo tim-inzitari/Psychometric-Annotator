@@ -4,6 +4,11 @@
 /* Defaults and Globals */
 
 
+var docheight = 0;
+var docwidth = 0;
+
+var hori = 0;
+var vert = 0;
 
 var canvas  = null;
 var wordNo = -1;
@@ -71,9 +76,8 @@ function imageDrawer(){
     document.getElementById("zoomInput").value = 1;
     document.getElementById("brushInput").value = 1;
     canvas = new fabric.Canvas('image_imageCanvas');
-    canvas.on('selection:cleared', function() {
-        cosole.log(";)")
-    });
+    mainGroup = new fabric.Group([],{left: 0, top: 0});
+    canvas.preserveObjectStacking = true;
     canvas.onChange = canvas.renderAll.bind(canvas)
     annotationList.push(new Annotation(1,new fabric.Group()));
     annotationChars.push(null);
@@ -82,12 +86,14 @@ function imageDrawer(){
     canvas.on('path:created', function(e){
         var your_path = e.path;
         var AA = annotationList[activeAnnotation].group;
+        AA.hasBorders = false;
         AA.addWithUpdate(your_path);
         canvas.remove(your_path);
         AA.bringToFront();
+        mainGroup.addWithUpdate();
     });
-    mainGroup = new fabric.Group([],{left: 0, top: 0});
     canvas.add(mainGroup);
+
     var ctx = canvas.getContext("2d");
     var image = new Image();
     image.onload = function() {
@@ -96,13 +102,35 @@ function imageDrawer(){
         var y1 = image.height * loc[1];
         var width = image.width * loc[2];
         var height = image.height * loc[3];
+        hori = -x1;
+        var horiScroll = $('#hori_scroller');
+        horiScroll.attr("min",-image.width);
+        horiScroll.attr("max",1250);
+        horiScroll.val(-x1);
+        vert = -y1;
+        var vertScroll = $('#vert_scroller');
+        vertScroll.attr("min",-image.height);
+        vertScroll.attr("max",500);
+        vertScroll.val(-y1);
+
+        $("#one").val(parseInt($("#vert_scroller").val(), 10));
+        $("#two").val(parseInt($("#hori_scroller").val(), 10));
 
         var background = new fabric.Image(image, {
             left: -x1,
             top: -y1,
             angle: 0,
-            opacity: .5
+            opacity: .5,
+            lockRotation: true,
+            lockScalingX: true,
+            lockScalingY: true,
+            lockSkewingX: true,
+            lockSkewingY: true,
+            hasBorders: false,
+            hasControls: false
         });
+        docheight = background.height;
+        docwidth = background.width;
 
         var imageInstance = new fabric.Image(image, {
             left: -x1,
@@ -112,8 +140,8 @@ function imageDrawer(){
              clipTo: function (ctx) {
                  ctx.rect(x1 - (image.width / 2), y1 - (image.height / 2), width, height);
              },
-            lockMovementX: true,
-            lockMovementY: true,
+            height: docheight,
+            width: docwidth,
             lockRotation: true,
             lockScalingX: true,
             lockScalingY: true,
@@ -122,8 +150,8 @@ function imageDrawer(){
             hasBorders: false,
             hasControls: false
         });
-        mainGroup.add(background);
-        mainGroup.addWithUpdate(imageInstance);
+        canvas.add(background);
+        canvas.add(imageInstance);
         imageInstance.selectable = true;
         canvas.renderAll();
         canvas.isDrawingMode = true;
@@ -156,8 +184,45 @@ function getImageSource(imgUrn){
 
 function updateZoomValue(){
     //$("#image_imageCanvas").css("size","value")
-    canvas.setZoom(document.getElementById("zoomInput").value);
+    canvas.setZoom($("#zoomInput").val());
 }
+
+function hori_scroll(){
+    $("#two").val(parseInt($("#hori_scroller").val(), 10));
+    var delta = hori - parseInt($("#hori_scroller").val(), 10);
+    var iter = 0;
+    canvas.forEachObject(function(obj){
+        console.log("____________________");
+        console.log(iter);
+        console.log(hori);
+        console.log(parseInt($("#hori_scroller").val(), 10));
+        console.log(obj.left);
+        obj.set('left', obj.get('left') - delta).setCoords();
+        console.log(obj.left);
+        iter = iter + 1;
+    });
+    hori = hori - delta;
+    rerenderThatActuallyWorks();
+};
+
+function vert_scroll(){
+    $("#one").val(parseInt($("#vert_scroller").val(), 10));
+    var delta = vert - parseInt($("#vert_scroller").val(), 10);
+    var iter = 0;
+    canvas.forEachObject(function(obj){
+        console.log("____________________");
+        console.log(iter);
+        console.log(vert);
+        console.log(parseInt($("#vert_scroller").val(), 10));
+        console.log(obj.left);
+        obj.set('top', obj.get('top') - delta).setCoords();
+        console.log(obj.left);
+        iter = iter + 1;
+    });
+    vert = vert - delta;
+    rerenderThatActuallyWorks();
+}
+
 function updateBrushValue(){
     canvas.freeDrawingBrush.width = document.getElementById("brushInput").value
 }
@@ -373,6 +438,13 @@ function validateAnnoImage(){
     }
     return true;
 }
+
+$("#submit").click(function() {
+    var val = $('input[name=q12_3]:checked').val();
+    alert(val);
+});
+
+
 
 $("#submitButton").click(function() {
     if(validateAnnoString() & validateAnnoImage()) {
