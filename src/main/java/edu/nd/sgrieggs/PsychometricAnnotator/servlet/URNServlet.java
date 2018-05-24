@@ -151,6 +151,7 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
             }
             response.getWriter().write(ret);
         }else if(askResponse.toLowerCase().equals("img")){
+            //The response is a letter image
             Word active = userList.get(translateUser(user)).getActiveWord();
             int x = (int)Double.parseDouble(request.getParameter("x"));
             int y = (int)Double.parseDouble(request.getParameter("y"));
@@ -159,6 +160,7 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
             int cn = Integer.parseInt(request.getParameter("id"));
             int ln = active.getLineNo();
             int wn = active.getWordNo();
+            char anno = request.getParameter("annotation");
 
 
 

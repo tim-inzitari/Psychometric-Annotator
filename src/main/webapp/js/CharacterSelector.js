@@ -411,7 +411,7 @@ function buildAnnoString(){
         if(annotationChars[x] === null){
             temp[x]="-";
         } else if(annotationChars[x] === "ꝝ"){
-            temp[x] = "ℽ"
+            temp[x] = "ꝝ"
         } else{
             temp[x] = annotationChars[x]
         }
@@ -470,17 +470,17 @@ $("#submitButton").click(function() {
         }
         canvas.setZoom(1.01);
         canvas.setZoom(1);
-        submitPost(0, outArray, xArray, yArray);
+        submitPost(0, outArray, xArray, yArray, buildAnnoString());
     }
 });
 
 
-function submitPost(x,outArray,xArray,yArray){
+function submitPost(x,outArray,xArray,yArray, anno){
     canvas.setZoom(1);
     if(x === annotationList.length){
         $.post("URNServlet", {
             askResponse: "res",
-            annotation: buildAnnoString(),
+            annotation: anno,
             type:"char",
             data: JSON.stringify(outArray),
             wordNo: wordNo,
@@ -503,8 +503,9 @@ function submitPost(x,outArray,xArray,yArray){
             data:imgRet,
             wordNo: wordNo,
             lineNo: lineNo
+            annotaion:anno.charAt(x)
         },function(){
-            submitPost(x+1,outArray,xArray,yArray);
+            submitPost(x+1,outArray,xArray,yArray,anno);
         });
     }
 }
