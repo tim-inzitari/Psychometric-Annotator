@@ -57,15 +57,11 @@ jQuery(function($){
         askResponse:"ask",
         type:"characterselector"
     },function(responseText){
-        console.log(responseText);
         response = responseText.split("-");
         paramUrn = response[0];
         lineNo = response[1];
         wordNo = response[2];
-        console.log("line: " + lineNo);
-        console.log("word: " + wordNo);
         imgUrn = paramUrn;
-        console.log(imgUrn);
         imageDrawer();
         initializeKeyboad(this);
     });
@@ -192,13 +188,7 @@ function hori_scroll(){
     var delta = hori - parseInt($("#hori_scroller").val(), 10);
     var iter = 0;
     canvas.forEachObject(function(obj){
-        console.log("____________________");
-        console.log(iter);
-        console.log(hori);
-        console.log(parseInt($("#hori_scroller").val(), 10));
-        console.log(obj.left);
         obj.set('left', obj.get('left') - delta).setCoords();
-        console.log(obj.left);
         iter = iter + 1;
     });
     hori = hori - delta;
@@ -210,13 +200,7 @@ function vert_scroll(){
     var delta = vert - parseInt($("#vert_scroller").val(), 10);
     var iter = 0;
     canvas.forEachObject(function(obj){
-        console.log("____________________");
-        console.log(iter);
-        console.log(vert);
-        console.log(parseInt($("#vert_scroller").val(), 10));
-        console.log(obj.left);
         obj.set('top', obj.get('top') - delta).setCoords();
-        console.log(obj.left);
         iter = iter + 1;
     });
     vert = vert - delta;
@@ -273,10 +257,8 @@ function clearAnnotation(anno){
 
 $('#undo').click(function(){
     var AA = annotationList[activeAnnotation].group;
-    console.log(AA.toDataURL());
     var obj = AA.getObjects();
     AA.removeWithUpdate(obj[obj.length-1]);
-    console.log(AA.toDataURL());
     rerenderThatActuallyWorks();
 });
 
@@ -397,7 +379,6 @@ function generateURN(group){
 
 function initializeKeyboad(){
     var target = $("#annoKeyboard");
-    console.log(classList.length)
     for(var x = 0; x < classList.length; x++){
         target.append("<img src=\"buttons/"+classList[x]+".png\" id = \""+classList[x]+"\" onclick = \"setAnnoChar("+x+")\" border=\"1\">");
     }
@@ -494,7 +475,7 @@ function submitPost(x,outArray,xArray,yArray, anno){
         });
     }else{
         var imgRet = annotationList[x].group.toDataURL();
-        $.post("URNServlet",{
+        $.post("URNServlet", {
             askResponse: "img",
             urn:imgUrn,
             id:x,
@@ -502,9 +483,9 @@ function submitPost(x,outArray,xArray,yArray, anno){
             y:yArray[x],
             data:imgRet,
             wordNo: wordNo,
-            lineNo: lineNo
+            lineNo: lineNo,
             annotaion:anno.charAt(x)
-        },function(){
+          }, function(){
             submitPost(x+1,outArray,xArray,yArray,anno);
         });
     }

@@ -15,7 +15,7 @@ services:
   web:
     depends_on:
       - db
-    image: local-tomcat-jdbc:latest
+    image: tomcat:8.5
     ports:
       - "8080:8080"
     environment:
