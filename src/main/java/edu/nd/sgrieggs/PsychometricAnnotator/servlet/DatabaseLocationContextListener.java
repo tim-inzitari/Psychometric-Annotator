@@ -7,6 +7,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+import java.util.logging.Logger;
 
 @WebListener
 
@@ -15,15 +16,15 @@ import javax.servlet.annotation.WebListener;
  */
 
 public class DatabaseLocationContextListener implements ServletContextListener {
-
+    private static final Logger log = Logger.getLogger(DatabaseLocationContextListener.class.getName());
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        System.out.println("Loading Database Parameters");
+        log.info("Loading Database Parameters");
         ServletContext ctx = servletContextEvent.getServletContext();
         String driver = ctx.getInitParameter("database.JDBC_DRIVER");
-        String location = ctx.getInitParameter("database.DB_LOC");
-        String user = ctx.getInitParameter("database.DB_USER");
-        String pw = ctx.getInitParameter("database.password");
+        String location = "jdbc:mysql://"+System.getenv("PSYANN_DB_HOST")+"/"+System.getenv("PSYANN_DATABASE");
+        String user = System.getenv("PSYANN_DB_USER");
+        String pw = System.getenv("PSYANN_DB_PASSWORD");
         DocumentDatabase.initialize(driver, location,user,pw);
     }
 

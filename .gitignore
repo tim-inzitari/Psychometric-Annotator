@@ -1,3 +1,7 @@
+#ignore all docker volumes
+ImageArchive/
+database/
+
 #ignore all documents
 **/image_archive
 

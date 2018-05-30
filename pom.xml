@@ -27,7 +27,7 @@
         <dependency> <!-- ONLY USED LOCALY -->
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.40</version>  <!-- v5.x.x is for production, v6.x.x EAP X DevAPI -->
+            <version>5.1.6</version>  <!-- v5.x.x is for production, v6.x.x EAP X DevAPI -->
         </dependency>
         <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
         <dependency>
@@ -63,14 +63,6 @@
                     </webResources>
                 </configuration>
             </plugin>
-
-            <!--
-                  <plugin>
-                    <groupId>com.google.cloud.tools</groupId>
-                    <artifactId>appengine-maven-plugin</artifactId>
-                    <version>${appengine.maven.plugin}</version>
-                  </plugin>
-             -->
         </plugins>
     </build>
 

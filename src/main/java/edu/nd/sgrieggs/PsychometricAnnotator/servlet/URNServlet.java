@@ -28,6 +28,7 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
         log.info("Servlet Loading...");
         userMap = new HashMap<String, Integer>();
         userList = new ArrayList<User>();
+        log.severe("testing....");
         ctx = getServletContext();
     }
 
@@ -37,8 +38,9 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
 
     protected void doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
         String askResponse = request.getParameter("askResponse");
-        String user = request.getUserPrincipal().getName();
-        //for debugging purposes
+        // String user = request.getUserPrincipal().getName();
+        String user = "TEST";
+        // for debugging purposes
         if(user.equals("smgrieggs@gmail.com")){
             user = "TEST";
         }else{
@@ -62,7 +64,7 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
                     String logMessage = "";
                     while(params.hasMoreElements()){
                         String paramName = params.nextElement();
-                        logMessage = logMessage + "Parameter Name - "+paramName+", Value - "+request.getParameter(paramName) + "\n";
+                        logMessage = logMessage + "Parameter Name - " + paramName + ", Value - " + request.getParameter(paramName) + "\n";
                     }
                     log.severe(logMessage);
                 }
@@ -160,7 +162,7 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
             int cn = Integer.parseInt(request.getParameter("id"));
             int ln = active.getLineNo();
             int wn = active.getWordNo();
-            char anno = request.getParameter("annotation");
+            char anno = request.getParameter("annotation").toCharArray()[0];
 
 
 

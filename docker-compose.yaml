@@ -1,27 +1,28 @@
 version: '2'
 services:
   db:
-    image: mysql:5.7
+    image: mysql/mysql-server:5.7.22
     volumes:
       - db_data:/var/lib/mysql
-    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: somewordpress
-      MYSQL_DATABASE: wordpress
+      MYSQL_DATABASE: documents
       MYSQL_USER: software
-      MYSQL_PASSWORD: it doesnt matter how secure this password is, because the database will be restricted to only allow local connections
-  images:
-    
+      MYSQL_PASSWORD: 1234
+    volumes:
+      - ./database:/var/lib/mysql
+      - ./scripts:/test
   web:
     depends_on:
-      -db
-    image: tomcat:8.0
+      - db
+    image: local-tomcat-jdbc:latest
     ports:
       - "8080:8080"
     environment:
       PSYANN_DB_HOST: db:3306
       PSYANN_DB_USER: software
-      PSYANN_DB_PASSWORD: it doesnt matter how secure this password is, because the database will be restricted to only allow local connections
+      PSYANN_DATABASE: documents
+      PSYANN_DB_PASSWORD: 1234
     volumes:
       - ./target/PsychometricAnnotator-1.0-SNAPSHOT.war:/usr/local/tomcat/webapps/ROOT.war
       - ./target/PsychometricAnnotator-1.0-SNAPSHOT:/usr/local/tomcat/webapps/ROOT
