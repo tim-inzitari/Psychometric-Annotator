@@ -1,6 +1,10 @@
 #ignore all docker volumes
-ImageArchive/
-database/
+ImageArchive/*
+database/*
+#but keep the folders
+!ImageArchive/.gitkeep
+!database/.gitkeep
+
 
 #ignore all documents
 **/image_archive
