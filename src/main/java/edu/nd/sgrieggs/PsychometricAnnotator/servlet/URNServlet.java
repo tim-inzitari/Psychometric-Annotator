@@ -17,7 +17,6 @@ import java.util.logging.Logger;
  */
 
 public class URNServlet extends javax.servlet.http.HttpServlet {
-    private final String IMAGE_HANDLER_LOCATION = "https://py-image-handler-dot-premium-bloom-174915.appspot.com/";
     private static final Logger log = Logger.getLogger(URNServlet.class.getName());
     private HashMap<String, Integer> userMap;
     private ArrayList<User> userList;
@@ -39,7 +38,7 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
     protected void doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
         String askResponse = request.getParameter("askResponse");
         // String user = request.getUserPrincipal().getName();
-        String user = "TEST";
+        String user = "TESTII";
         // for debugging purposes
         if(user.equals("smgrieggs@gmail.com")){
             user = "TEST";
@@ -166,11 +165,14 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
 
 
 
-            LetterSaver saver = new LetterSaver((String)ctx.getAttribute("FILES_DIR"), urn, ln, wn, cn, x, y, user, imgURL);
+            log.info("saving input letter to " + (String)ctx.getAttribute("FILES_DIR")+"....");
+            LetterSaver saver = new LetterSaver((String)ctx.getAttribute("FILES_DIR"), urn, ln, wn, cn, x, y, user, imgURL, anno);
             if(saver.saveImage()){
                 saver = null;
+                log.info("success!");
                 response.getWriter().write("True");
             }else{
+                log.severe("failure..");
                 saver = null;
             }
 

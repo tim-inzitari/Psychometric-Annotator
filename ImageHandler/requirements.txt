@@ -1,3 +1,1 @@
-WebOb
-Paste
-webapp2
+Pillow

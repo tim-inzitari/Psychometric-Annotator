@@ -26,3 +26,10 @@ services:
     volumes:
       - ./target/PsychometricAnnotator-1.0-SNAPSHOT.war:/usr/local/tomcat/webapps/ROOT.war
       - ./target/PsychometricAnnotator-1.0-SNAPSHOT:/usr/local/tomcat/webapps/ROOT
+      - ./data:/savedatatarget
+  # imagehandler:
+  #   image: ImageHandler:latest
+  #   volumes:
+  #     - ./data:/input
+  #     - ./output:/output
+  #     - ./ImageArchive:/images

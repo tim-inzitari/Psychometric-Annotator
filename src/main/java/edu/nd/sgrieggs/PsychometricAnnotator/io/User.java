@@ -161,11 +161,12 @@ public class User {
 
     private Connection getConnection(){
         try {
-                Class.forName(DocumentDatabase.getJdbcDriver());
-                return DriverManager.getConnection(DocumentDatabase.getDbLoc(),DocumentDatabase.getDbUser(), DocumentDatabase.getDbPassword());
-        }catch(Exception e){
-            log.severe("Exception while getting the connection: " + e.getMessage());
-        }
+              Class.forName(DocumentDatabase.getJdbcDriver());
+              return DriverManager.getConnection(DocumentDatabase.getDbLoc(),DocumentDatabase.getDbUser(), DocumentDatabase.getDbPassword());
+            }catch(Exception e){
+              log.severe("Exception while getting the connection: " + e.getMessage());
+              log.severe(e+"");
+            }
         return null;
     }
 

@@ -286,7 +286,6 @@ function highlightAnno(anno){
 function unhighlightAnno(anno){
     var target = parseInt(anno.id);
     $('#'+target).css('background-color',colorList[target % colorList.length]);
-
     if(target === activeAnnotation){
         $('#'+target).css('background-color','white');
         annotationList[target].group.forEachObject(function(path) {
@@ -302,7 +301,6 @@ function unhighlightAnno(anno){
 }
 
 function setAnnoChar(index){
-
     var out = classList[index];
     if(out === "ꝝ"){
         annotationChars[activeAnnotation] = "ꝝ";
@@ -458,6 +456,7 @@ $("#submitButton").click(function() {
 
 function submitPost(x,outArray,xArray,yArray, anno){
     canvas.setZoom(1);
+    console.log("B: " + x);
     if(x === annotationList.length){
         $.post("URNServlet", {
             askResponse: "res",
@@ -484,8 +483,9 @@ function submitPost(x,outArray,xArray,yArray, anno){
             data:imgRet,
             wordNo: wordNo,
             lineNo: lineNo,
-            annotaion:anno.charAt(x)
+            annotation:anno.charAt(x)
           }, function(){
+            console.log("A: " + x);
             submitPost(x+1,outArray,xArray,yArray,anno);
         });
     }

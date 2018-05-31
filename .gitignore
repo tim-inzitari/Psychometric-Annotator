@@ -1,13 +1,15 @@
-#ignore all docker volumes
+#ignore
 ImageArchive/*
 database/*
-#but keep the folders
+output/*
+**/image_archive/*
+
+#but keep the folder structure
 !ImageArchive/.gitkeep
 !database/.gitkeep
-
-
-#ignore all documents
-**/image_archive
+!data/.gitkeep
+!output/.gitkeep
+!**/image_archive/.gitkeep
 
 #ignore target
 target

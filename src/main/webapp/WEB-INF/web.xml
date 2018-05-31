@@ -41,24 +41,13 @@
 
     <context-param>
         <param-name>tempfile.dir</param-name>
-        <param-value>tmpfiles</param-value>
+        <param-value>savedatatarget</param-value>
     </context-param>
     <context-param>
         <param-name>database.JDBC_DRIVER</param-name>
         <param-value>com.mysql.jdbc.Driver</param-value>
     </context-param>
-    <context-param>
-        <param-name>database.DB_LOC</param-name>
-        <param-value>jdbc:mysql://db:3306/documents</param-value>
-    </context-param>
-    <context-param>
-        <param-name>database.DB_USER</param-name>
-        <param-value>software</param-value>
-    </context-param>
-    <context-param>
-        <param-name>database.password</param-name>
-        <param-value>it doesnt matter how secure this password is, because the database will be restricted to only allow local connections</param-value>
-    </context-param>
+
 
 
 </web-app>

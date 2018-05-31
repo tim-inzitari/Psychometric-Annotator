@@ -1,67 +1,34 @@
-import os
-import webapp2
+import numpy as np
+from PIL import Image
+import cStringIO
 import h5py
+from os import walk
+
+charlookup = {"a":1,"b":2,"c":3,"d":4,"e":5,"f":6,"g":7,"h":8,"i":9,"l":10,"m":11,"n":12,"o":13,"p":14,"q":15,"r":16,
+              "s":17,"t":18,"u":19,"x":20,"y":21,"z":22,"~":23,"ⴈ":24,"ꝑ":25,"ꝓ":26, "ꝗ":27,"ꝝ":28,"ꝩ":29,"ꝯ":30,
+              ".":31,";":32,"_":33,"'":34,"?":35}
+
+def loadRawImage(urn):
+    return np.asarray(Image.open('/image/'+urn+".jpg"))
 
 
-classList = {"a":1,"b":2,"c":3,"d":4,"e":5,"f":6,"g":7,"h":8,"i":9,"l":10,"m":11,
-"n":12,"o":13,"p":14,"q":15,"r":16,"s":17,"t":18,"u":19,"x":20,"y":21,"z":22,
-"~":23,"ⴈ":24,"ꝑ":25,"ꝓ":26, "ꝗ":27,"ꝝ":28,"ꝩ":29,"ꝯ":30,".":31,"_":32,"\'":33,
-";":34,"?":35}
-
-class CharImg(object):
-    x = 0
-    y = 0
-    urn = ""
-    line = 0
-    word = 0
-    character = 0
-    user = "TEST"
-    imgURL = ""
-
-    # The class "constructor" - It's actually an initializer
-    def __init__(self, x, y, urn, line, word, character, user, imgURL ,annotation):
-        self.x = x
-        self.y = y
-        self.urn = urn.split("@")[0]
-        self.line = line
-        self.word = word
-        self.character = character
-        self.user = user
-        self.imgURL = imgURL
-        self.annotation = annotation
-
-
-class MainPage(webapp2.RequestHandler):
-
-    def get(self):
-        self.response.write("Hello!")
-
-    def post(self):
-        try:
-            inputChar = CharImg(int(self.request.params["x"]),int(self.request.params["y"]),
-                                    self.request.params["urn"],int(self.request.params["line"]),
-                                    int(self.request.params["word"]),int(self.request.params["character"]),
-                                    self.request.params["user"], self.request.params["imgURL"], self.request.params["annotation"])
-        except (OSError, IOError) as e:
-            print e
-
-def document_image(inputChar):
-    if inputChar.y < 0:
-        inputChar.y = 0
-    if inputChar.x < 0:
-        inputChar.x = 0
-    e = "/"+inputChar.urn in results
+def document_image(raw, results, user, urn, line, word, character, letterX, letterY, img, anno):
+    if letterY < 0:
+        letterY = 0
+    if letterX < 0:
+        letterX = 0
+    e = "/"+urn in results
     if not e:
-        results.create_group("/"+inputChar.urn)
-    e = "/"+inputChar.urn+"/"+inputChar.urn in results
+        results.create_group("/"+urn)
+    e = "/"+urn+"/"+urn in results
     if e:
-        docImg = results["/"+inputChar.urn+"/"+inputChar.urn]
+        docImg = results["/"+urn+"/"+urn]
     else:
-        print inputChar.urn
-        length,width = getSize(inputChar.urn)
-        docImg = results.create_dataset("/"+inputChar.urn+"/"+inputChar.urn, (length,width,4), dtype='uint8')
+        print urn
+        length,width = getSize(urn)
+        docImg = results.create_dataset("/"+urn+"/"+urn, (length,width,4), dtype='uint8')
     letter_height,letter_width,  thisWillBe3 = np.shape(img)
-    target = docImg[inputChar.y:inputChar.y+letter_height,inputChar.x:inputChar.x+letter_width]
+    target = docImg[letterY:letterY+letter_height,letterX:letterX+letter_width]
     bwImg = np.logical_not(np.equal(np.max(img,2),0))
     bwShape = np.shape(bwImg)
     targetShape = np.shape(target)
@@ -72,12 +39,55 @@ def document_image(inputChar):
     target[bwImg, 0] = line + 1
     target[bwImg, 1] = word + 1
     target[bwImg, 2] = character + 1
-    target[bwImg, 3] = classList[inputChar.annotation]
+    target[bwImg, 3] = anno
 
-    docImg[inputChar.y:inputChar.y+letter_height,inputChar.x:inputChar.x+letter_width] = target
+    docImg[letterY:letterY+letter_height,letterX:letterX+letter_width] = target
+    pylab.show()
 
 
 
-app = webapp2.WSGIApplication([
-    ('/', MainPage),
-], debug=False)
+
+
+def main():
+    inputDir = "out/"
+    outputDir = ""
+    files = []
+    for (dirpath, dirnames, filenames) in walk(inputDir):
+        files.extend(filenames)
+        break
+    results = h5py.File(outputDir + "results.hdf5", "a")
+    for data in files:
+        if(".png" in data):
+            data = inputDir + data
+            img = np.asarray(Image.open(data))
+            data2 = data.replace(".png",".txt")
+            infile = file(data2, 'r')
+            urn = infile.readline().strip()
+            line = int(infile.readline().strip())
+            word = int(infile.readline().strip())
+            character = int(infile.readline().strip())
+            x = int(infile.readline().strip())
+            y = int(infile.readline().strip())
+            user = infile.readline().strip()
+            anno = infile.readline().strip()
+            infile.close()
+            urn = urn.split("@")[0]
+            document_image(results, user, urn, line, word, character, x, y, img, anno)
+
+
+
+
+
+
+
+    pylab.set_cmap("prism")
+    # pylab.imshow(np.asarray(Image.open("REG_VAT12_186r_RAW.jpg"),np.uint8))
+
+    pylab.figure("lines")
+    pylab.imshow(results["/" + urn + "/" + urn][:,:,0])
+    pylab.figure("words")
+    pylab.imshow(results["/" + urn + "/" + urn][:, :, 1])
+    pylab.figure("Chars")
+    pylab.imshow(results["/" + urn + "/" + urn][:, :, 2])
+    pylab.show()
+    results.close()

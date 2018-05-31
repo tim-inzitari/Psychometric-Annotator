@@ -18,9 +18,10 @@ public class LetterSaver {
     private int y;
     private String user;
     private String imgUrl;
+    private char annotation;
 
 
-    public LetterSaver(String saveLocation, String urn, int line, int word, int character, int x, int y, String user, String imgUrl){
+    public LetterSaver(String saveLocation, String urn, int line, int word, int character, int x, int y, String user, String imgUrl, char annotation){
         this.saveLocation = saveLocation;
 
         String operatingSystem = System.getProperty("os.name").toLowerCase();
@@ -38,6 +39,7 @@ public class LetterSaver {
         this.y = y;
         this.user = user;
         this.imgUrl = imgUrl;
+        this.annotation = annotation;
     }
 
 
@@ -63,9 +65,7 @@ public class LetterSaver {
             writer.println(x);
             writer.println(y);
             writer.println(user);
-
-            System.out.println("attempting to save7");
-
+            writer.println(annotation);
 
             FileOutputStream imageOutFile = new FileOutputStream(imgOut);
             String binStr = this.url2string(imgUrl);
