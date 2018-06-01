@@ -12,7 +12,7 @@ output/*
 !**/image_archive/.gitkeep
 
 #ignore target
-target
+**/target
 
 #ignore idea files
 *.iml
