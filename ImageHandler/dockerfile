@@ -1,0 +1,19 @@
+FROM ubuntu:18.04
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Copy the current directory contents into the container at /app
+ADD . /app
+RUN apt-get update && apt-get install -y wget && apt-get install -y inotify-tools && apt-get install -y git
+RUN wget -c https://repo.continuum.io/archive/Anaconda2-5.2.0-Linux-x86_64.sh && bash Anaconda2-5.2.0-Linux-x86_64.sh -b -p && rm Anaconda2-5.2.0-Linux-x86_64.sh
+
+
+RUN ~/anaconda2/bin/conda install --yes mysql-python
+
+RUN ~/anaconda2/bin/conda create -n image_handler numpy h5py PIL mysql-python && . ~/anaconda2/bin/activate image_handler && git clone https://github.com/openzoom/deepzoom.py.git && mv deepzoom.py dzp && cd dzp && python setup.py install
+
+
+
+# Run app.py when the container launches
+CMD ["./runner.sh"]

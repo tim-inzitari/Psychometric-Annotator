@@ -9,8 +9,6 @@ create table trans(
 create table doc(
 	ID int,
 	URN varchar(100) NOT NULL,
-    height int,
-    width int,
 	used boolean DEFAULT false,
     PRIMARY KEY(ID)
 );
@@ -72,7 +70,7 @@ create table annotation(
 #INSERT INTO doc(ID,URN) VALUES (3,"urn:cite2:hmt:vaimg.v1:VA012RUVD_0894");
 #INSERT INTO doc(ID,URN) VALUES (4,"urn:cite2:hmt:vaimg.v1:VA012RUVD_0895");
 #INSERT INTO doc(ID,URN) VALUES (5,"urn:cite2:hmt:vaimg.v1:VA012VN_0514");
-INSERT INTO doc(ID,URN,height,width) VALUES (0,"urn:cite2:ecod:vaimg.v1:einstift_018r",2697,2136);
+#INSERT INTO doc(ID,URN) VALUES (0,"urn:cite2:ecod:vaimg.v1:einstift_018r");
 
 
 #INSERT INTO trans(ID) VALUES ("TEST");

@@ -15,7 +15,7 @@ services:
   web:
     depends_on:
       - db
-    image: tomcat:8.5
+    image: psyanno:latest
     ports:
       - "8080:8080"
     environment:
@@ -24,12 +24,18 @@ services:
       PSYANN_DATABASE: documents
       PSYANN_DB_PASSWORD: 1234
     volumes:
-      - ./target/PsychometricAnnotator-1.0-SNAPSHOT.war:/usr/local/tomcat/webapps/ROOT.war
-      - ./target/PsychometricAnnotator-1.0-SNAPSHOT:/usr/local/tomcat/webapps/ROOT
+      - ./ImageArchive:/usr/local/tomcat/webapps/ROOT/image_archive/
       - ./data:/savedatatarget
-  # imagehandler:
-  #   image: ImageHandler:latest
-  #   volumes:
-  #     - ./data:/input
-  #     - ./output:/output
-  #     - ./ImageArchive:/images
+  imagehandler:
+    depends_on:
+      - db
+    image: imagehandler:latest
+    environment:
+      PSYANN_DB_HOST: db
+      PSYANN_DB_USER: software
+      PSYANN_DATABASE: documents
+      PSYANN_DB_PASSWORD: 1234
+    volumes:
+      - ./data:/input
+      - ./output:/output
+      - ./ImageArchive:/images
