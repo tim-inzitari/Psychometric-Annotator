@@ -38,6 +38,9 @@ for source in files:
                 path = path + urn_parts[part] + "_"
             else:
                 filename = filename + urn_parts[part] + "_"
+            if len(urn_parts) == 0:
+                urn_parts = "other"
+                urn = "other:"+urn
         filename = filename[:-1]
         target = outputDir+"/"+path+"/"+filename
         if(not os.path.exists(target+"_files")):
