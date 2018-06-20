@@ -51,18 +51,19 @@ def document_image(results, user, urn, line, word, character, letterX, letterY, 
 
 
 def main():
-    inputDir = "/data/"
+    inputDir = "/input/"
     outputDir = "/output/"
     files = []
     for (dirpath, dirnames, filenames) in os.walk(inputDir):
+        print filenames
         files.extend(filenames)
         break
     results = h5py.File(outputDir + "results.hdf5", "a")
     if not os.path.exists(inputDir + "/done"):
         os.makedirs(inputDir + "/done")
-    if not os.path.exists(outputDir + "/done"):
-        os.makedirs(outputDir + "/done")
+    print len(files)
     for data in files:
+        print "Processing: " + data
         if(".png" in data):
             data = inputDir + data
             img = np.asarray(Image.open(data))
