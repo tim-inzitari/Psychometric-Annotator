@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #initialize the image archive\
-. ~/anaconda2/bin/activate image_handler
+. ~/miniconda2/bin/activate image_handler
 cd dzp
 python setup.py install
 cd ..
