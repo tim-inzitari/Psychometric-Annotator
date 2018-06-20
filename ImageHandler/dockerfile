@@ -6,7 +6,7 @@ RUN wget -c https://repo.continuum.io/miniconda/Miniconda2-4.5.4-Linux-x86_64.sh
 
 RUN ~/miniconda2/bin/conda install --yes mysql-python
 
-RUN ~/miniconda2/bin/conda create -n image_handler numpy h5py==2.8.0 PIL mysql-python && . ~/miniconda2/bin/activate image_handler && git clone https://github.com/openzoom/deepzoom.py.git && mv deepzoom.py dzp && cd dzp && python setup.py install
+RUN mkdir /app && cd /app && ~/miniconda2/bin/conda create -n image_handler numpy h5py==2.8.0 PIL mysql-python && . ~/miniconda2/bin/activate image_handler && git clone https://github.com/openzoom/deepzoom.py.git && mv deepzoom.py dzp && cd dzp && python setup.py install
 
 # Set the working directory to /app
 WORKDIR /app
