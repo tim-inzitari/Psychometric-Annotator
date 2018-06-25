@@ -13,3 +13,7 @@ Afterwards, simply go to localhost:8080 in any web browser (it was mostly tested
 To start it again after initializing it run `startup.sh` or `docker-compose up`
 
 To shut it down run `shutdown.sh` or `docker-compose down --remove-orphans`
+
+After the software has started, you can access the web interface in your browser at `locahost:8080`
+
+In order to add a document simply save your image as a .jpg file, and title it using its CITE2 URN. Then place it in the "ImageArchive" folder. The software will automatically process the image, add it to the database, and make it available in the web interface.
