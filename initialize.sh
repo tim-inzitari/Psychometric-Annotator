@@ -7,8 +7,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
   docker-compose up -d
   sleep 1
-  docker exec -it psychometricannotator_db_1 sh -c 'mysql --password=$MYSQL_ROOT_PASSWORD documents < /test/initScript.sql'
-  docker exec -it psychometricannotator_imagehandler_1 sh -c '. ~/anaconda2/bin/activate image_handler && python /app/document_processor.py'
-  docker exec -it psychometricannotator_imagehandler_1 sh -c 'rm -rf /input/*'
-  docker exec -it psychometricannotator_imagehandler_1 sh -c 'rm -rf /output/*'
+  docker exec -it psychometric-annotator_db_1 sh -c 'mysql --password=$MYSQL_ROOT_PASSWORD documents < /test/initScript.sql'
+  docker exec -it psychometric-annotator_imagehandler_1 sh -c '. ~/anaconda2/bin/activate image_handler && python /app/document_processor.py'
+  docker exec -it psychometric-annotator_imagehandler_1 sh -c 'rm -rf /input/*'
+  docker exec -it psychometric-annotator_imagehandler_1 sh -c 'rm -rf /output/*'
 fi
