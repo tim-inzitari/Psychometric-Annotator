@@ -27,7 +27,6 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
         log.info("Servlet Loading...");
         userMap = new HashMap<String, Integer>();
         userList = new ArrayList<User>();
-        log.severe("testing....");
         ctx = getServletContext();
     }
 
@@ -38,7 +37,8 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
     protected void doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
         String askResponse = request.getParameter("askResponse");
         // String user = request.getUserPrincipal().getName();
-        String user = "TESTII";
+        String user = getClientIpAddress(request);
+        log.info(user +" connected, stored as: " + hashToID(user.hashCode()));
         // for debugging purposes
         if(user.equals("smgrieggs@gmail.com")){
             user = "TEST";
@@ -300,5 +300,29 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
             magic *= 10;
         }
         return new String(outA);
+    }
+
+    //from https://memorynotfound.com/client-ip-address-java/
+    private final String[] IP_HEADER_CANDIDATES = {
+      "X-Forwarded-For",
+      "Proxy-Client-IP",
+      "WL-Proxy-Client-IP",
+      "HTTP_X_FORWARDED_FOR",
+      "HTTP_X_FORWARDED",
+      "HTTP_X_CLUSTER_CLIENT_IP",
+      "HTTP_CLIENT_IP",
+      "HTTP_FORWARDED_FOR",
+      "HTTP_FORWARDED",
+      "HTTP_VIA",
+      "REMOTE_ADDR" };
+
+    public String getClientIpAddress(javax.servlet.http.HttpServletRequest request) {
+        for (String header : IP_HEADER_CANDIDATES) {
+            String ip = request.getHeader(header);
+            if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
+                return ip;
+            }
+        }
+        return request.getRemoteAddr();
     }
 }
