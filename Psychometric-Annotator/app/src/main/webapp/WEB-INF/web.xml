@@ -18,25 +18,25 @@
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
-    <!--<security-constraint>-->
-        <!--<web-resource-collection>-->
-            <!--<web-resource-name>documents</web-resource-name>-->
-            <!--<url-pattern>/*</url-pattern>-->
-        <!--</web-resource-collection>-->
-        <!--<auth-constraint>-->
-            <!--<role-name>admin</role-name>-->
-            <!--<role-name>scribe</role-name>-->
-        <!--</auth-constraint>-->
-    <!--</security-constraint>-->
-    <!--<login-config>-->
-    <!--<auth-method>BASIC</auth-method>-->
-    <!--&lt;!&ndash; Please note following line .. its commented &ndash;&gt;-->
-    <!--&lt;!&ndash; <realm-name>Admin</realm-name> &ndash;&gt;-->
-    <!--</login-config>-->
-            <!--&lt;!&ndash; Following section was missing &ndash;&gt;-->
-    <!--<security-role>-->
-    <!--<role-name>sam</role-name>-->
-    <!--</security-role>-->
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>documents</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+            <role-name>scribe</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <login-config>
+    <auth-method>BASIC</auth-method>-
+    <!--Please note following line .. its commented-->
+    <!--<realm-name>Admin</realm-name>-->
+    </login-config>
+            <!--Following section was missing-->
+    <security-role>
+    <role-name>sam</role-name>
+    </security-role>
 
 
     <context-param>

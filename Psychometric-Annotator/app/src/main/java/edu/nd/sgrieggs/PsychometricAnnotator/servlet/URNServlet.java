@@ -37,7 +37,7 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
     protected void doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
         String askResponse = request.getParameter("askResponse");
         // String user = request.getUserPrincipal().getName();
-        String user = getClientIpAddress(request);
+        String user = request.getUserPrincipal().getName();
         log.info(user +" connected, stored as: " + hashToID(user.hashCode()));
         // for debugging purposes
         if(user.equals("smgrieggs@gmail.com")){
