@@ -3,7 +3,7 @@
 Toolset for generating pixel by pixel ground truth data for manuscript images.
 
 
-Requires Docker and Docker-Compose
+Requires Docker and Docker-Compose. The Mysql-server container requires at least 1 GB of ram
 
 
 For first time use, use `initialize.sh` to initialize the docker containers and the database.
