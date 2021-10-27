@@ -29,7 +29,7 @@ services:
   imagehandler:
     depends_on:
       - db
-    image: smgrieggs/imagehandler:latest
+    image: tsinzitari/imagehandler:latest
     environment:
       PSYANN_DB_HOST: db
       PSYANN_DB_USER: software

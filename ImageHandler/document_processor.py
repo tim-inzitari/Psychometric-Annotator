@@ -1,7 +1,7 @@
+from PIL import Image
 import deepzoom
 import os
 import shutil
-import PIL
 import MySQLdb
 
 inputDir = "/images/"
