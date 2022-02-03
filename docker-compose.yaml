@@ -1,6 +1,7 @@
 version: '2'
 services:
   db:
+    platform: linux/x86_64
     image: mysql/mysql-server:5.7.22
     volumes:
       - db_data:/var/lib/mysql
@@ -15,7 +16,7 @@ services:
   web:
     depends_on:
       - db
-    image: smgrieggs/psyanno:latest
+    image: tsinzitari/psyanno:latest
     ports:
       - "8080:8080"
     environment:
