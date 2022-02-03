@@ -27,7 +27,7 @@ for (dirpath, dirnames, filenames) in os.walk(inputDir):
 
 IC = deepzoom.ImageCreator()
 for source in files:
-    print source
+    print(source)
     if (".jpg" in source):
         urn = source.replace(".jpg","")
         urn_parts= urn.split(":")
