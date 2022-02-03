@@ -176,6 +176,7 @@ function getImageSource(imgUrn){
     var ts = "";
     var localDir = plainUrn.split(":")[0] + "_" + plainUrn.split(":")[1] + "_" + plainUrn.split(":")[2] + "_" + plainUrn.split(":")[3] + "_/";
     ts = "image_archive/" + localDir + imgId + "_RAW.jpg";
+    console.log('imgUrn' + imgUrn)
     return ts;
 }
 
