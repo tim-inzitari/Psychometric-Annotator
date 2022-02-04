@@ -56,7 +56,7 @@ function initOpenSeadragon() {
         viewer.destroy();
         viewer = null
     }
-
+    console.log('urn: ' + imgUrn)
     viewer = OpenSeadragon({
         id: 'image_imageContainer',
         prefixUrl: 'css/images/',
@@ -66,6 +66,7 @@ function initOpenSeadragon() {
         minZoomImageRatio: 0.1, // of viewer size
         immediateRender: true
     });
+    console.log('opening '+ imgUrn)
 
     viewer.addHandler('full-screen', function (viewer) {
         console.log('fullscreen');
@@ -359,29 +360,36 @@ function getTileSources(imgUrn){
     var plainUrn = imgUrn.split("@")[0]
     var imgId = plainUrn.split(":")[4]
     var ts = ""
+    useLocal = false
+    testUrn = imgUrn
     if (useLocal){
         var localDir = plainUrn.split(":")[0] + "_" + plainUrn.split(":")[1] + "_" + plainUrn.split(":")[2] + "_" + plainUrn.split(":")[3] + "_/"
         ts = usePath + localDir + imgId + useSuffix
-        console.log(ts)
+        console.log('local: ' + ts)
     } else {
-        ts = usePath + imgId + useSuffix
+        ts = usePath + testUrn + useSuffix
         console.log(ts)
     }
+   
+    console.log("Print: ") 
+    console.log(ts)
     return ts
 }
 
 $("#submitButton").click(function() {
-    console.log("here")
+    console.log("here");
     var outArray = new Array(roiArray.length);
+    console.log('here')
     for(x = 0; x < roiArray.length; x++){
         outArray[x] = imgUrn + "@" + roiArray[x].roi;
+        console.log('save: '+ outArray[x]);
     }
     $.post("URNServlet", {
         askResponse: "res",
         type:"line",
         data: JSON.stringify(outArray)
     },function(responseText){
-        console.log(responseText)
+        console.log(responseText);
         if(responseText === "TRUE") {
             location.reload();
         }else{

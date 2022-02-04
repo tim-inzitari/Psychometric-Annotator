@@ -127,7 +127,7 @@ function getImageSource(imgUrn){
     var imgId = plainUrn.split(":")[4];
     var ts = "";
     var localDir = plainUrn.split(":")[0] + "_" + plainUrn.split(":")[1] + "_" + plainUrn.split(":")[2] + "_" + plainUrn.split(":")[3] + "_/";
-    ts = "image_archive/" + localDir + imgId + "_RAW.jpg";
+    ts = "image_archive/"  + plainU + "_RAW.jpg";
     console.log();
     return ts;
 }

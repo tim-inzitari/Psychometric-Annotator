@@ -175,7 +175,7 @@ function getImageSource(imgUrn){
     var imgId = plainUrn.split(":")[4];
     var ts = "";
     var localDir = plainUrn.split(":")[0] + "_" + plainUrn.split(":")[1] + "_" + plainUrn.split(":")[2] + "_" + plainUrn.split(":")[3] + "_/";
-    ts = "image_archive/" + localDir + imgId + "_RAW.jpg";
+    ts = "image_archive/" + plainUrn + "_RAW.jpg";
     console.log('imgUrn' + imgUrn)
     return ts;
 }
@@ -278,6 +278,7 @@ function changeAnnotation(target){
 
 function highlightAnno(anno){
     var target = parseInt(anno.id);
+    console.log(path);
     $('#'+target).css('background-color','black');
     annotationList[target].group.forEachObject(function(path) {
         path.stroke = 'black' ;

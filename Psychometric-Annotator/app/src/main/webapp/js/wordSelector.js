@@ -48,6 +48,8 @@ jQuery(function($){
         paramUrn = response[0];
         lineNo = response[1];
         console.log(lineNo);
+        console.log('here');
+        console.log(paramUrn);
         setUpUI();
         imgUrn = paramUrn;
         initOpenSeadragon();
@@ -61,8 +63,10 @@ function initOpenSeadragon() {
         viewer.destroy();
         viewer = null
     }
-
+    console.log(imgUrn);
     var location = imgUrn.split("@")[1].split(",");
+    console.log('word location: '); 
+    console.log(location);
 
     viewer = OpenSeadragon({
         id: 'image_imageContainer',
@@ -374,11 +378,12 @@ function getTileSources(imgUrn){
     var plainUrn = imgUrn.split("@")[0]
     var imgId = plainUrn.split(":")[4]
     var ts = ""
+    useLocal=false
     if (useLocal){
         var localDir = plainUrn.split(":")[0] + "_" + plainUrn.split(":")[1] + "_" + plainUrn.split(":")[2] + "_" + plainUrn.split(":")[3] + "_/"
         ts = usePath + localDir + imgId + useSuffix
     } else {
-        ts = usePath + imgId + useSuffix
+        ts = usePath + plainUrn + useSuffix
     }
     return ts
 }
@@ -387,6 +392,7 @@ $('#submitButton').click(function() {
     var outArray = new Array(roiArray.length);
     for(x = 0; x < roiArray.length; x++){
         outArray[x] = imgUrn + "@" + roiArray[x].roi;
+        console.log('save '+ outArray[x]);
     }
     //console.log(JSON.stringify(roiArray["roi"]));
     $.post("URNServlet", {
