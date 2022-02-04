@@ -3,7 +3,7 @@
 var viewer = null;
 var latinList = ["a","b","c","d","e","f","g","h","i","l","m","n","o","p","q","r","s","t","u","x","y","z","~","ⴈ","ꝑ","ꝓ", "ꝗ","ꝝ","ꝩ","ꝯ","dot","semi","","'","other"];
 var oldhebrewList = ['𐤀', '𐤁', '𐤂', '𐤃', '𐤄', '𐤅', '𐤆', '𐤇', '𐤈', '𐤉', '𐤊', '𐤋', '𐤌', '𐤍', '𐤎', '𐤏', '𐤐', '𐤑', '𐤒', '𐤓', '𐤔', '𐤕',"dot","semi",'\'','other'];
-var hebrewList = ['א', 'ב', 'ג','ד','ה‎', 'ו', 'ז', 'ח' 'ט', 'י', 'כ' 'ך', 'ל‎', 'מ‎', 'ם', 'נ', 'ן', 'ס', 'ע', 'פ', 'ף', 'צ', 'ץ', 'ק‎', 'ר', 'ש', 'ת', 'other']
+var hebrewList = ['א', 'ב', 'ג','ד','ה', 'ו', 'ז', 'ח' ,'ט', 'י', 'כ' ,'ך', 'ל', 'מ', 'ם', 'נ', 'ן', 'ס', 'ע', 'פ', 'ף', 'צ', 'ץ', 'ק', 'ר', 'ש', 'ת', 'other']
 
 
 classList = hebrewList
@@ -68,7 +68,7 @@ function initializeKeyboad(){
     var target = $("#annoKeyboard");
     console.log(classList.length)
     for(var x = 0; x < classList.length; x++){
-        target.append("<img src=\"buttons/"+classList[x]+".png\" id = \""+classList[x]+"\" onclick = \"setAnnoChar("+x+")\" border=\"1\">");
+        target.append("<img height='50' width='50' src=\"buttons/"+classList[x]+".png\" id = \""+classList[x]+"\" onclick = \"setAnnoChar("+x+")\" border=\"1\">");
     }
 }
 
