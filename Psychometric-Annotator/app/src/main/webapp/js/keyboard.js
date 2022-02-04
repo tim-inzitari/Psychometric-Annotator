@@ -417,7 +417,7 @@
      ], 'lang': ["hi"] };
  
    this.VKI_layout['Croatian'] = {
-     'name': "Croatian", 'keys': this.VKI_layout['Bosanski'].keys.slice(0), 'lang': ["hr"]
+     'name': "Croatian", 'keys': this.VKI_layout['Bosnian'].keys.slice(0), 'lang': ["hr"]
    };
  
    this.VKI_layout['Western Armenian'] = {
@@ -746,7 +746,7 @@
      ], 'lang': ["sk"] };
  
    this.VKI_layout['Slovenian'] = {
-     'name': "Slovenian", 'keys': this.VKI_layout['Bosanski'].keys.slice(0), 'lang': ["sl"]
+     'name': "Slovenian", 'keys': this.VKI_layout['Bosnian'].keys.slice(0), 'lang': ["sl"]
    };
  
    this.VKI_layout['Serbian Cryllic'] = {
@@ -759,7 +759,7 @@
      ], 'lang': ["sr-Cyrl"] };
  
    this.VKI_layout['Serbian Latin'] = {
-     'name': "Serbian Latin", 'keys': this.VKI_layout['Bosanski'].keys.slice(0), 'lang': ["sr"]
+     'name': "Serbian Latin", 'keys': this.VKI_layout['Bosnian'].keys.slice(0), 'lang': ["sr"]
    };
  
    this.VKI_layout['Finnish'] = {
@@ -969,6 +969,7 @@
        [[" ", " "]]
      ], 'lang': ["zh"] };
  
+     
  
    /* ***** Define Dead Keys ************************************** */
    this.VKI_deadkey = {};
