@@ -19,7 +19,7 @@ var mainGroup = null;
 var annotationList = [];
 var annotationChars = [];
 var latinList = ["a","b","c","d","e","f","g","h","i","l","m","n","o","p","q","r","s","t","u","x","y","z","~","ⴈ","ꝑ","ꝓ", "ꝗ","ꝝ","ꝩ","ꝯ","dot","semi","","'","other"];
-var hebrewList = ['א','ב','ג','ד','ה','ו','ז','י','כך','ל','מם','ן','ס','ע','פף','צץ','ק','ר','ש','ת',"dot","semi",'','\'',',other'];
+var hebrewList = ['א','ב','ג','ד','ה','ו','ז','י','כך','ל','מם','ן','ס','ע','פף','צץ','ק','ר','ש','ת',"dot","semi",'\'','other'];
 
 
 classList = hebrewList
