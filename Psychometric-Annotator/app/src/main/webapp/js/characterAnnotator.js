@@ -1,7 +1,11 @@
 /* Defaults and Globals */
 
 var viewer = null;
-var classList = ["a","b","c","d","e","f","g","h","i","l","m","n","o","p","q","r","s","t","u","x","y","z","~","ⴈ","ꝑ","ꝓ", "ꝗ","ꝝ","ꝩ","ꝯ","dot","_","\'","semi","other"];
+var latinList = ["a","b","c","d","e","f","g","h","i","l","m","n","o","p","q","r","s","t","u","x","y","z","~","ⴈ","ꝑ","ꝓ", "ꝗ","ꝝ","ꝩ","ꝯ","dot","semi","","'","other"];
+var hebrewList = ['א','ב','ג','ד','ה','ו','ז','י','כך','ל','מם','ן','ס','ע','פף','צץ','ק','ר','ש','ת',"dot","semi",'','\'',',other'];
+
+
+classList = hebrewList
 var anno = "";
 var lineNo = -1;
 var wordNo = -1;
@@ -127,7 +131,7 @@ function getImageSource(imgUrn){
     var imgId = plainUrn.split(":")[4];
     var ts = "";
     var localDir = plainUrn.split(":")[0] + "_" + plainUrn.split(":")[1] + "_" + plainUrn.split(":")[2] + "_" + plainUrn.split(":")[3] + "_/";
-    ts = "image_archive/"  + plainU + "_RAW.jpg";
+    ts = "image_archive/"  + plainUrn + "_RAW.jpg";
     console.log();
     return ts;
 }

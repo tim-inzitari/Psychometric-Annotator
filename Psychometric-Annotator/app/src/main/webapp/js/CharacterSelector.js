@@ -18,7 +18,11 @@ var activeAnnotation = 0;
 var mainGroup = null;
 var annotationList = [];
 var annotationChars = [];
-var classList = ["a","b","c","d","e","f","g","h","i","l","m","n","o","p","q","r","s","t","u","x","y","z","~","ⴈ","ꝑ","ꝓ", "ꝗ","ꝝ","ꝩ","ꝯ","dot","semi","_","'","other"];
+var latinList = ["a","b","c","d","e","f","g","h","i","l","m","n","o","p","q","r","s","t","u","x","y","z","~","ⴈ","ꝑ","ꝓ", "ꝗ","ꝝ","ꝩ","ꝯ","dot","semi","","'","other"];
+var hebrewList = ['א','ב','ג','ד','ה','ו','ז','י','כך','ל','מם','ן','ס','ע','פף','צץ','ק','ר','ש','ת',"dot","semi",'','\'',',other'];
+
+
+classList = hebrewList
 var colorList =  ["#f23568","#6d38ff","#38ffd7","#fff238","#661641","#275fb3","#24a669","#a67b24","#ff38a2",
     "#194973","#35f268","#7f441c","#801c79","#2a8ebf","#216616","#d97330","#da32e6","#196d73","#bdff38","#bf3e2a",
     "#3d1973","#30cdd9","#858c1f","#661616"];
