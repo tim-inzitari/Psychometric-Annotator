@@ -1,6 +1,7 @@
 version: '2'
 services:
   db:
+    platform: linux/amd64
     image: mysql/mysql-server:5.7.22
     volumes:
       - db_data:/var/lib/mysql
