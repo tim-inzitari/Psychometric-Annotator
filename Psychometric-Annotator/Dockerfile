@@ -1,4 +1,4 @@
-FROM tomcat:8.5
+FROM tomcat:8.5.81
 
 MAINTAINER Sam Grieggs
 ADD ./app /app
