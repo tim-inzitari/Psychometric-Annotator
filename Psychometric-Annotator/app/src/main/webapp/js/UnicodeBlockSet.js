@@ -15,6 +15,15 @@ class Block {
         this.end = end;
 
     }
+
+    getChars() {
+        var chars = [];
+        for (var i = this.start; i <= this.end; i++){
+            chars.push(String.fromCodePoint(i));
+        }
+        return chars;
+    }
+
 }
 class BlockSet {
     /* Collection of Unicode Blocksets that can be called
@@ -48,12 +57,10 @@ class BlockSet {
         return Object.keys(this.blocks);
     }
 
+    // Gets the chars from a given block
     getBlock(name) {
         var block = this.blocks[name];
-        var chars = [];
-        for (var i = block.start; i <= block.end; i++){
-            chars.push(String.fromCodePoint(i));
-        }
+        var chars = block.getChars()
         return chars;
     }
 }
