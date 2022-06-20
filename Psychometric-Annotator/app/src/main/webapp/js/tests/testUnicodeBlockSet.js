@@ -16,12 +16,15 @@ function isNotEqual(a,b)
     return a.join() != b.join();
 }
 
+
+let hebrewBlock = new Block('Hebrew', 0x0590, 0x05FF);
 let blockSet = new BlockSet();
 //console.log(blockSet.getBlockKeys());
 console.assert(isEqual(blockSet.getBlockKeys(), Object.keys(blockSet.blocks)), 'Fail testUnicodeBlockSet.js: BlockSet.getBlockKeys not returning correct values for keys.');
 
 var hebrewChars = get_set(0x0590, 0x05FF);
 console.assert(isEqual(hebrewChars, blockSet.getBlock('Hebrew')), "Fail testUnicodeBlockSet.js: Hebrew Chars and Blockset of Hebrew Chars are not equal");
+console.assert(isEqual(hebrewChars, hebrewBlock.getChars()), "Fail testUnicodeBlockSet.js: Hebrew Chars and Block of Hebrew Chars are not equal");
 
 var toFailHebrew = get_set(0x0000, 0x007F);
 console.assert(isNotEqual(toFailHebrew, blockSet.getBlock('Hebrew')), "Fail: testcodeUnicodeBlockSet.js: Did not Fail hebrew equality check when input Basic Latin block to check");
