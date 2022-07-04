@@ -68,7 +68,7 @@ jQuery(function($){
         lineNo = response[1];
         wordNo = response[2];
         imgUrn = paramUrn;
-        imageDrawer();
+        //imageDrawer(); # old draw char system
         initializeKeyboad(this);
     });
 });
@@ -430,6 +430,8 @@ $("#submit").click(function() {
     var val = $('input[name=q12_3]:checked').val();
     alert(val);
 });
+
+
 
 
 
