@@ -184,7 +184,7 @@ function addRoiListing(roiObj){
     var idForListing = idForMappedUrn(roiObj.index);
     var idForRect = idForMappedROI(roiObj.index);
     var groupClass = "image_roiGroup_" + roiObj.group;
-    var txtbox = "<input type='text' size='1' value='' class='keyboardInput' lang='" + defaultLang + "' maxlength='1' id='annoInput" + idForListing + "'>";
+    var txtbox = "<input type='text' size='1' value='' class='keyboardInput' lang='" + defaultLang + "' maxlength='1' id='annoInput" + idForListing + "' required >";
     var deleteLink = "<a class='deleteLink' id='delete" + idForListing + "' data-index='" + roiObj.index + "'></a>";
     var mappedUrnSpan = "<li class='" + groupClass + "' id='" + idForListing + "' style='display:flex;'>";
     mappedUrnSpan +=txtbox + deleteLink + roiObj.mappedUrn + "</li>";
