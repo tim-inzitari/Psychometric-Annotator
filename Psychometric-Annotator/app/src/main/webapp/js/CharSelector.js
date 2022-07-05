@@ -186,7 +186,7 @@ function addRoiListing(roiObj){
     var groupClass = "image_roiGroup_" + roiObj.group;
     var txtbox = "<input type='text' size='1' value='' class='keyboardInput' lang='" + defaultLang + "' maxlength='1' id='annoInput" + idForListing + "'>";
     var deleteLink = "<a class='deleteLink' id='delete" + idForListing + "' data-index='" + roiObj.index + "'></a>";
-    var mappedUrnSpan = "<li class='" + groupClass + "' id='" + idForListing + "'>";
+    var mappedUrnSpan = "<li class='" + groupClass + "' id='" + idForListing + "' style='display:flex;'>";
     mappedUrnSpan +=txtbox + deleteLink + roiObj.mappedUrn + "</li>";
 
 
@@ -209,6 +209,7 @@ function addRoiListing(roiObj){
         deleteRoi(parseInt(i))
     });
     
+    // attach virtual keyboard
     var kb_id = 'annoInput'+idForListing
     var myInput = document.getElementById(kb_id);
     if (!myInput.VKI_attached) VKI_attach(myInput);
