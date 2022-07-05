@@ -5,6 +5,8 @@
 
 var viewer = null;
 
+var defaultLang = 'he' // 2 character code for default language of keyboard
+
 var defaultServerPath = "http://www.homermultitext.org/iipsrv?DeepZoom=/project/homer/pyramidal/VenA/";
 var defaultServerSuffix = ".tif.dzi";
 var defaultLocalpath = "image_archive/";
@@ -22,7 +24,11 @@ var useSuffix = localSuffix;
 var useLocal = true;
 
 var imgUrn;
-
+var annotationList = [];
+var annotationChars = [];
+var wordNo = -1;
+var lineNo = -1;
+var activeAnnotation = 0;
 
 var roiArray = [];
 var clipRect = null;
@@ -178,9 +184,11 @@ function addRoiListing(roiObj){
     var idForListing = idForMappedUrn(roiObj.index);
     var idForRect = idForMappedROI(roiObj.index);
     var groupClass = "image_roiGroup_" + roiObj.group;
+    var txtbox = "<input type='text' size='1' value='' class='keyboardInput' lang='" + defaultLang + "' maxlength='1' id='annoInput" + idForListing + "'>";
     var deleteLink = "<a class='deleteLink' id='delete" + idForListing + "' data-index='" + roiObj.index + "'></a>";
     var mappedUrnSpan = "<li class='" + groupClass + "' id='" + idForListing + "'>";
-    mappedUrnSpan += deleteLink + roiObj.mappedUrn + "</li>";
+    mappedUrnSpan +=txtbox + deleteLink + roiObj.mappedUrn + "</li>";
+
 
     $("#image_urnList").append(mappedUrnSpan);
     // <a class="image_deleteUrn">✖︎</a>
@@ -200,6 +208,10 @@ function addRoiListing(roiObj){
         var i = tid.replace("deleteimage_mappedUrn_","")
         deleteRoi(parseInt(i))
     });
+    
+    var kb_id = 'annoInput'+idForListing
+    var myInput = document.getElementById(kb_id);
+    if (!myInput.VKI_attached) VKI_attach(myInput);
 }
 
 function deleteRoi(c){
