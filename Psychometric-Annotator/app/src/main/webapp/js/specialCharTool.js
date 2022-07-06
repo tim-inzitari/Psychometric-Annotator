@@ -86,7 +86,10 @@ function makeTable(block_name){
         if(cur_col==0){content+='<tr id="dialog_table_row_'+cur_row+'">';}
 
         intCode = char.charCodeAt(0).toString(10)
-        content+='<td>'+unicodeDict[intCode] +'<button id="dialogCharButton_'+i+'" value='+char+'>'+char+'</td>';
+        console.log('here')
+        console.log('ጐ'.charCodeAt(0).toString(10))
+        console.log(unicodeDict[1424])
+        content+='<td>'+unicodeDict[intCode] +'<button id="dialogCharButton_'+i+'" value='+intCode+'>'+String.fromCharCode(intCode)+'</td>';
         // increase col check, end a row if needed
         // increase char number
         cur_col +=1;

@@ -21,8 +21,8 @@ class Block {
         console.log(this.end)
         console.log(this.name)
         for (var i = this.start; i <= this.end; i++){
-            console.log(String.fromCodePoint(parseInt(i,16)));
-            chars.push(String.fromCodePoint(parseInt(i,16)));
+            //console.log(String.fromCodePoint(parseInt(i,16)));
+            chars.push(String.fromCodePoint(parseInt(i,10)));
         }
         return chars;
     }
@@ -74,14 +74,14 @@ class BlockSet {
     // Gets the chars from a given block
     getBlock(name) {
         var block = this.blocks[name];
-        console.log(name)
+        //console.log(name)
         var chars = block.getChars();
         return chars;
     }
 
     getCharHexes(name) {
         var block = this.blocks[name];
-        console.log(name)
+        //console.log(name)
         var hexes = block.getHexes();
         return hexes;
     }
