@@ -137,6 +137,7 @@ function makeTable(block_name){
     content+= '</table>';
     $('#dialog_table_div').empty()
     $('#dialog_table_div').append(content);
+    
 }
 makeTable('Basic Latin')
 
@@ -167,16 +168,16 @@ function populateSelectMenu(blockset){
 }
 populateSelectMenu(unicodeBlockSet);
 
+$("#dialog_table_div table tr td button").click(function() {
+    var intCode = this.value;
+    extraChars.push([unicodeDict[intCode], String.fromCodePoint(parseInt(intCode,10))]);
+    makeSuperTable();
+});
 
 $('#selectmenu').on('selectmenuchange', function(event, ui) {
     makeTable($( "#selectmenu option:selected" ).text()); 
 });
 
-$("#dialog_table tr td button").click(function() {
-    var intCode = this.value;
-    extraChars.push([unicodeDict[intCode], String.fromCodePoint(parseInt(intCode,10))]);
-    makeSuperTable();
-});
 
 makeSuperTable();
 
