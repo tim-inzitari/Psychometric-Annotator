@@ -65,4 +65,3 @@ class BlockSet {
     }
 }
 
-module.exports= {Block, BlockSet};

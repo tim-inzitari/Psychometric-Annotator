@@ -2,18 +2,94 @@
 <head>
 	<meta charset="utf-8">
     <link href="css/jquery-ui.min.css" rel="stylesheet">
+    <style>
+    #dialog-link {
+		padding: .4em 1em .4em 20px;
+		text-decoration: none;
+		position: relative;
+	}
+	#dialog-link span.ui-icon {
+		margin: 0 5px 0 0;
+		position: absolute;
+		left: .2em;
+		top: 50%;
+		margin-top: -8px;
+	}
+
+    table{
+        width:100%;
+    }
+
+    </style>
+    <script src="js/UnicodeBlockSet.js"></script>
 </head>
 <body>
 
 
-<p>hi</p>
-
-
-
-
+    <h2 class="demoHeaders">Dialog</h2>
+    <p>
+        <button id="dialog-link" class="ui-button ui-corner-all ui-widget">
+            <span></span>Add More Special Characters
+        </button>
+    </p>
+    
+    
+    <!-- ui-dialog -->
+    <div id="dialog" title="Add More Special Characters">
+        <table>
+            <tr>
+                <td>d<button>d</button></td>
+                <td>d<button>d</button></td>
+            </tr>
+            <tr>
+                <td>d<button>d</button></td>
+                <td>d<button>d</button></td>
+            </tr>
+            <tr>
+                <td>d<button>d</button></td>
+                <td>d<button>d</button></td>
+            </tr>
+        </table>
+    </div>
+    
 
 <script src="js/jquery-3.2.1.min.js"></script>
 <script src="js/jquery-ui.min.js"></script>
 <script src="js/specialCharTool.js"></script>
+
+<script>
+    $( "#dialog" ).dialog({
+	autoOpen: false,
+	width: 400,
+	buttons: [
+		{
+			text: "Ok",
+			click: function() {
+				$( this ).dialog( "close" );
+			}
+		},
+		{
+			text: "Cancel",
+			click: function() {
+				$( this ).dialog( "close" );
+			}
+		}
+	]
+});
+// Hover states on the static widgets
+$( "#dialog-link, #icons li" ).hover(
+	function() {
+		$( this ).addClass( "ui-state-hover" );
+	},
+	function() {
+		$( this ).removeClass( "ui-state-hover" );
+	}
+);
+// Link to open the dialog
+$( "#dialog-link" ).click(function( event ) {
+	$( "#dialog" ).dialog( "open" );
+	event.preventDefault();
+});
+</script>
 </body>
 </html>
