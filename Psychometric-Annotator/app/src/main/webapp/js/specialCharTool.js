@@ -94,6 +94,7 @@ function makeTable(block_name){
 
     // close table and append it to div
     content+= '</table>';
+    $('#dialog_table_div').empty()
     $('#dialog_table_div').append(content);
 }
 makeTable('Basic Latin')
@@ -125,4 +126,8 @@ function populateSelectMenu(blockset){
 }
 populateSelectMenu(unicodeBlockSet);
 
+
+$('#selectmenu').on('selectmenuchange', function(event, ui) {
+    makeTable($( "#selectmenu option:selected" ).text()); 
+});
 
