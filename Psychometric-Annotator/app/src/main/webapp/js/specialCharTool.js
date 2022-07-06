@@ -5,6 +5,8 @@ var button_label;
 var block;
 var block_name;
 
+var extraChars= [["unknown/other", "&lt;UNK&gt;"]]
+
 unicodeDict = {}
 unicodeNameCSV.forEach(int_name => {
     unicodeDict[int_name[0]] = int_name[1]
@@ -61,6 +63,36 @@ function labelandbuttonHtmlCharButton(label, button_label){
 
     var html= labelHtml+buttonHtml
     return html
+}
+var n_e_cols = 8
+function makeSuperTable() {
+    $('#extra_char_buttons').empty();
+    content = "<table id='extra_char_table' border='1px solid black'>";
+    content+='<tr><th colspan="'+n_e_cols+'">Additional Character Input Buttons</th></tr>'
+
+    var cur_col = 0;
+    var cur_row=0;
+    var i = 0;
+
+    extraChars.forEach(extraChar => {
+        var label = extraChar[0]
+        var char = extraChar[1]
+
+        if(cur_col==0){content+='<tr id="dialog_table_row_'+cur_row+'">';}
+
+        content+= '<td><label>'+label+'</label><button id="extraChar_'+i+'">'+char+'</button></td>';
+
+        cur_col +=1;
+        i +=1
+        if (cur_col == n_e_cols) {
+            cur_col = 0;
+            cur_row+=1;
+            content += '</tr>'
+        }
+
+    });
+    content += '</table>'
+    $('#extra_char_buttons').append(content);
 }
 
 
@@ -139,4 +171,12 @@ populateSelectMenu(unicodeBlockSet);
 $('#selectmenu').on('selectmenuchange', function(event, ui) {
     makeTable($( "#selectmenu option:selected" ).text()); 
 });
+
+$("#dialog_table tr td button").click(function() {
+    var intCode = this.value;
+    extraChars.push([unicodeDict[intCode], String.fromCodePoint(parseInt(intCode,10))]);
+    makeSuperTable();
+});
+
+makeSuperTable();
 
