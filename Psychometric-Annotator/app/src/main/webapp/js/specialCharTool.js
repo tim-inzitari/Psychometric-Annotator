@@ -99,7 +99,11 @@ function makeSuperTable() {
 //-----------------------------------------------------------
 // Dialogue Table
 //-----------------------------------------------------------
-
+function addC(obj){
+    var intCode = obj.value;
+    extraChars.push([unicodeDict[intCode], String.fromCodePoint(parseInt(intCode,10))]);
+    makeSuperTable();
+}
 var n_d_cols = 5;
 // Make the actual table
 function makeTable(block_name){
@@ -121,7 +125,7 @@ function makeTable(block_name){
         console.log('here')
         console.log('ጐ'.charCodeAt(0).toString(10))
         console.log(unicodeDict[1424])
-        content+='<td>'+unicodeDict[intCode] +'<button id="dialogCharButton_'+i+'" value='+intCode+'>'+String.fromCharCode(intCode)+'</td>';
+        content+='<td>'+unicodeDict[intCode] +'<button onclick="addC(this)" id="dialogCharButton_'+i+'" value='+intCode+'>'+String.fromCharCode(intCode)+'</td>';
         // increase col check, end a row if needed
         // increase char number
         cur_col +=1;
@@ -168,14 +172,12 @@ function populateSelectMenu(blockset){
 }
 populateSelectMenu(unicodeBlockSet);
 
-$("#dialog_table_div table tr td button").click(function() {
-    var intCode = this.value;
-    extraChars.push([unicodeDict[intCode], String.fromCodePoint(parseInt(intCode,10))]);
-    makeSuperTable();
-});
+
+
 
 $('#selectmenu').on('selectmenuchange', function(event, ui) {
-    makeTable($( "#selectmenu option:selected" ).text()); 
+    makeTable($( "#selectmenu option:selected" ).text());
+    makeSuperTable() 
 });
 
 
