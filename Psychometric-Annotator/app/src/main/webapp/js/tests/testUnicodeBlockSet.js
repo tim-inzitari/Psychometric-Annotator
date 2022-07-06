@@ -1,5 +1,4 @@
 const {BlockSet, Block} = require('../UnicodeBlockSet')
-
 function get_set(a, b){
     var chars = [];
     for (var i = a; i <= b; i++){chars.push(String.fromCodePoint(i));}

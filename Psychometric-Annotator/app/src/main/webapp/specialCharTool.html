@@ -2,6 +2,11 @@
 <head>
 	<meta charset="utf-8">
     <link href="css/jquery-ui.min.css" rel="stylesheet">
+    <script src="js/blockRanges.js"></script>
+    <script src="js/unicodeNames.js"></script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/jquery.csv.min.js"></script>
+    <script src="js/UnicodeBlockSet.js"></script>
     <style>
     #dialog-link {
 		padding: .4em 1em .4em 20px;
@@ -21,75 +26,52 @@
     }
 
     </style>
-    <script src="js/UnicodeBlockSet.js"></script>
+
 </head>
 <body>
 
 
-    <h2 class="demoHeaders">Dialog</h2>
+    <h2 class="demoHeaders">Special Character Tool</h2>
+
+    <!--Already added special character list-->
+    <table id='extra_char_buttons' border="1">
+        <tr>
+            <th colspan="3">Additional Character Input Buttons</th>
+        </tr>
+        <tr>
+            <td>
+                <label>Unknown/Other Characters</label>
+                <button id='otherChar_Unk'>UNK</button>
+            </td>
+        </tr>
+    </table>
+
     <p>
         <button id="dialog-link" class="ui-button ui-corner-all ui-widget">
-            <span></span>Add More Special Characters
+            Add More Special Characters To Table
         </button>
     </p>
     
     
     <!-- ui-dialog -->
     <div id="dialog" title="Add More Special Characters">
-        <table>
-            <tr>
-                <td>d<button>d</button></td>
-                <td>d<button>d</button></td>
-            </tr>
-            <tr>
-                <td>d<button>d</button></td>
-                <td>d<button>d</button></td>
-            </tr>
-            <tr>
-                <td>d<button>d</button></td>
-                <td>d<button>d</button></td>
-            </tr>
+        <!--Select Menu-->
+        <label>Selected Unicode Block</label>
+        <select id="selectmenu">
+            <option disabled selected>Please Select Unicode Block</option>
+            
+
+        </select>
+        <p> Buttons add character to list automatically.</p>
+        <p><b>Note:</b>Unicode blocks may contain gaps of non-visible or computer use only characters, ignore those.</p>
+        <div id="dialog_table_div">
+
         </table>
+        </div>
     </div>
     
 
-<script src="js/jquery-3.2.1.min.js"></script>
 <script src="js/jquery-ui.min.js"></script>
 <script src="js/specialCharTool.js"></script>
-
-<script>
-    $( "#dialog" ).dialog({
-	autoOpen: false,
-	width: 400,
-	buttons: [
-		{
-			text: "Ok",
-			click: function() {
-				$( this ).dialog( "close" );
-			}
-		},
-		{
-			text: "Cancel",
-			click: function() {
-				$( this ).dialog( "close" );
-			}
-		}
-	]
-});
-// Hover states on the static widgets
-$( "#dialog-link, #icons li" ).hover(
-	function() {
-		$( this ).addClass( "ui-state-hover" );
-	},
-	function() {
-		$( this ).removeClass( "ui-state-hover" );
-	}
-);
-// Link to open the dialog
-$( "#dialog-link" ).click(function( event ) {
-	$( "#dialog" ).dialog( "open" );
-	event.preventDefault();
-});
-</script>
 </body>
 </html>

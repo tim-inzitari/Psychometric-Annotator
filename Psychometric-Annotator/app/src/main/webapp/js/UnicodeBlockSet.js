@@ -1,4 +1,3 @@
-
 class Block {
     /*Block of Unicode
     input: name of the block, aswell as start char code and end char code
@@ -18,8 +17,12 @@ class Block {
 
     getChars() {
         var chars = [];
+        console.log(this.start)
+        console.log(this.end)
+        console.log(this.name)
         for (var i = this.start; i <= this.end; i++){
-            chars.push(String.fromCodePoint(i));
+            console.log(String.fromCodePoint(parseInt(i,16)));
+            chars.push(String.fromCodePoint(parseInt(i,16)));
         }
         return chars;
     }
@@ -41,26 +44,30 @@ class BlockSet {
         this.initalizeBlocks();
     }
     addBlock(name, start, end){
-        let block = new Block(name, start, end);
-        this.blocks[block.name] = block;
+        let bl = new Block(name, start, end);
+        this.blocks[bl.name] = bl;
     }
     initalizeBlocks() {
-        this.addBlock("Basic Latin", 0x0000, 0x007F);
-        this.addBlock("Latin-1 Supplement", 0x0080, 0x00FF);
-        this.addBlock("Hebrew", 0x0590, 0x05FF);
-        this.addBlock("Arabic", 0x600, 0x06FF);
-        this.addBlock("Syraic", 0x700, 0x74F);
-        this.addBlock("Arabic Supplement", 0x750, 0x77F);
-        this.addBlock("Alphabetic Presentation Forms", 0xFB00, 0xFB4F)
+        
+        // Load Unicode blocks
+        // from unicodeNames.js
+
+        blockRangeCSV.forEach(b => {
+            this.addBlock(b[0], b[1], b[2]);
+        });
+
+
     }
     getBlockKeys() {
         return Object.keys(this.blocks);
     }
 
+
     // Gets the chars from a given block
     getBlock(name) {
         var block = this.blocks[name];
-        var chars = block.getChars()
+        console.log(name)
+        var chars = block.getChars();
         return chars;
     }
 }
