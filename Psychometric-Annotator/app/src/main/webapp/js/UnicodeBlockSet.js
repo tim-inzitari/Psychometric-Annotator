@@ -27,6 +27,14 @@ class Block {
         return chars;
     }
 
+    getHexes() {
+        var hexes = [];
+        for (var i = this.start; i <= this.end; i++){
+            hexes.push(parseInt(i,16))
+        }
+        return hexes
+    }
+
 }
 class BlockSet {
     /* Collection of Unicode Blocksets that can be called
@@ -69,6 +77,13 @@ class BlockSet {
         console.log(name)
         var chars = block.getChars();
         return chars;
+    }
+
+    getCharHexes(name) {
+        var block = this.blocks[name];
+        console.log(name)
+        var hexes = block.getHexes();
+        return hexes;
     }
 }
 

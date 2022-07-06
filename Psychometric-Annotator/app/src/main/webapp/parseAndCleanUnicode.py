@@ -6,14 +6,15 @@ import pandas as pd
 import numpy as np
 
 #latest version of unicode
-uniNames = pd.read_csv("http://unicode.org/Public/UNIDATA/UnicodeData.txt", sep=';', header=None, index_col=0)
+uniNames = pd.read_csv("http://unicode.org/Public/UNIDATA/UnicodeData.txt", sep=';', header=None, index_col=None)
 
 n_cols = len(uniNames.columns)
 
 #drop all but name and index
-uniNames = uniNames.drop(uniNames.iloc[:, 1:],axis = 1)
-uniNames.columns = ['name']
+uniNames = uniNames.drop(uniNames.iloc[:, 2:],axis = 1)
+uniNames.columns = ['hex code','name']
 uniNames.index.names=['hex code']
+uniNames['hex code'] = uniNames['hex code'].apply(int, base=16)
 #drop control chars
 uniNames = uniNames[uniNames.name != '<control>']
 uniNames['name']=uniNames['name'].str.strip()
@@ -42,7 +43,7 @@ os.makedirs(path, exist_ok=True)
 import csv
 quoteRule = csv.QUOTE_NONNUMERIC
 
-uniNames.to_csv(f'{path}/unicodeNames.csv', header=False, quoting=quoteRule)
+uniNames.to_csv(f'{path}/unicodeNames.csv', header=False, quoting=quoteRule, index=False)
 blocks.to_csv(f'{path}/blockRanges.csv', index=False,header=False,quoting=quoteRule)
 
 

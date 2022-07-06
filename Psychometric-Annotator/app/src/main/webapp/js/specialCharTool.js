@@ -5,6 +5,11 @@ var button_label;
 var block;
 var block_name;
 
+unicodeDict = {}
+unicodeNameCSV.forEach(int_name => {
+    unicodeDict[int_name[0]] = int_name[1]
+    
+});
 
 //-----------------------------------------------------------
 //-----------------------------------------------------------
@@ -80,7 +85,8 @@ function makeTable(block_name){
         // Start a row if needed
         if(cur_col==0){content+='<tr id="dialog_table_row_'+cur_row+'">';}
 
-        content+='<td>'+char +'<button id="dialogCharButton_'+i+'">'+char+'</td>'
+        intCode = char.charCodeAt(0).toString(10)
+        content+='<td>'+unicodeDict[intCode] +'<button id="dialogCharButton_'+i+'" value='+char+'>'+char+'</td>';
         // increase col check, end a row if needed
         // increase char number
         cur_col +=1;
