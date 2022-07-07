@@ -10,51 +10,30 @@
 	<meta http-equiv="pragma" content="no-cache" />
 
 	<link rel="stylesheet" type="text/css" href="css/application.css">
-	<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.17/fabric.min.js"></script>
 	<link rel='stylesheet' type='text/css' href='css/keyboard.css'>
-	<link href="css/jquery-ui.min.css" rel="stylesheet">
+
 	<script type='text/javascript' src='js/keyboard.js'></script>
-	<script src="js/blockRanges.js"></script>
-    <script src="js/unicodeNames.js"></script>
-	<script src="js/jquery.csv.min.js"></script>
-    <script src="js/UnicodeBlockSet.js"></script>
-	<script src="js/jquery-ui.min.js"></script>
-	<style>
-		#dialog-link {
-			padding: .4em 1em .4em 20px;
-			text-decoration: none;
-			position: relative;
-		}
-		#dialog-link span.ui-icon {
-			margin: 0 5px 0 0;
-			position: absolute;
-			left: .2em;
-			top: 50%;
-			margin-top: -8px;
-		}
-	
-		table{
-			width:100%;
-		}
-	
-		</style>
+
 </head>
 <body>
 
 <header>
-	Character Annotator <span id="app_header_versionInfo">v.1.0.0</span>
+	Character Annotator <span id="app_header_versionInfo">v.0.0.1</span>
 </header>
 
 <div id="image_sidebar" class="app_sidebarDiv">
 	<button id = "loadImageButton">Load Image</button>
-
-
-	
 	<div id = input_form>
 		<form id = "form">
 			<h2>Character Input</h2>
-			<div id = "inputBox" >
+			<div id = "annoKeyboard" >
+                <div id = "currentSelection" style = "font-size: 30pt">
+                    -
+                </div>
+                <br/><br/>
+
 			</div>
 			Difficulty (0 being very easy and 7 being very difficult):<br>
 			0<input oninput="updateValue()" type="range" id="difficulty_range" value="0" max="7">7
@@ -77,34 +56,7 @@
 		Your browser does not support the HTML5 canvas tag.
 	</canvas>
 </div>
-<div id="specialCharTool">
-	<h2 class="demoHeaders">Special Character Tool</h2>
 
-	<!--Already added special character list-->
-	<div id='extra_char_buttons' >
-	</div>
-
-	<p>
-		<button id="dialog-link" class="ui-button ui-corner-all ui-widget">
-			Add More Special Characters To Table
-		</button>
-	</p>
-	<div id="dialog" title="Add More Special Characters">
-		<!--Select Menu-->
-		<label>Selected Unicode Block</label>
-		<select id="selectmenu">
-			<option disabled selected>Please Select Unicode Block</option>
-			
-
-		</select>
-		<p> Buttons add character to list automatically.</p>
-		<p><b>Note:</b>Unicode blocks may contain gaps of non-visible or computer use only characters, ignore those.</p>
-		<div id="dialog_table_div">
-
-
-	</div>
-</div>
-</div>
 <footer>
 	<!-- modified copyright message -->
 	<!--<input type='text' value='' class='keyboardInput'> -->
@@ -115,6 +67,5 @@
 </footer>
 
 
-<script type="text/javascript" src="js/characterAnnotator.js"></script>
-</body>
+<script type="text/javascript" src="js/oldCharacterAnnotator.js"></script>
 </html>
