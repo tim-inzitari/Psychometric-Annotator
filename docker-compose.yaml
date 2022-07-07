@@ -15,7 +15,7 @@ services:
   web:
     depends_on:
       - db
-    image: tsinzitari/psyanno:latest
+    image: tsinzitari/psyanno:test
     ports:
       - "8080:8080"
     environment:

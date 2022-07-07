@@ -527,29 +527,29 @@
     a.image_roiGroup_23 { border: 3px solid #858c1f; }
     a.image_roiGroup_24 { border: 3px solid #661616; }
 
-    li.image_roiGroup_1:before  {color: #f23568; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_2:before  {color: #6d38ff; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_3:before  {color: #38ffd7; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_4:before  {color: #fff238; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_5:before  {color: #661641; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_6:before  {color: #275fb3; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_7:before  {color: #24a669; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_8:before  {color: #a67b24; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_9:before  {color: #ff38a2; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_10:before {color: #194973; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_11:before {color: #35f268; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_12:before {color: #7f441c; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_13:before {color: #801c79; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_14:before {color: #2a8ebf; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_15:before {color: #216616; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_16:before {color: #d97330; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_17:before {color: #da32e6; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_18:before {color: #196d73; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_19:before {color: #bdff38; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_20:before {color: #bf3e2a; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_21:before {color: #3d1973; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_22:before {color: #30cdd9; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_23:before {color: #858c1f; content: "▶︎"; padding-right:0.5em; }
-    li.image_roiGroup_24:before {color: #661616; content: "▶︎"; padding-right:0.5em; }
+    li.image_roiGroup_1:before  {color: #f23568; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_2:before  {color: #6d38ff; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_3:before  {color: #38ffd7; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_4:before  {color: #fff238; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_5:before  {color: #661641; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_6:before  {color: #275fb3; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_7:before  {color: #24a669; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_8:before  {color: #a67b24; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_9:before  {color: #ff38a2; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_10:before {color: #194973; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_11:before {color: #35f268; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_12:before {color: #7f441c; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_13:before {color: #801c79; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_14:before {color: #2a8ebf; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_15:before {color: #216616; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_16:before {color: #d97330; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_17:before {color: #da32e6; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_18:before {color: #196d73; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_19:before {color: #bdff38; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_20:before {color: #bf3e2a; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_21:before {color: #3d1973; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_22:before {color: #30cdd9; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_23:before {color: #858c1f; content: "<b>&#9654;</b>"; padding-right:0.5em; }
+    li.image_roiGroup_24:before {color: #661616; content: "<b>&#9654;</b>"; padding-right:0.5em; }
 
 }

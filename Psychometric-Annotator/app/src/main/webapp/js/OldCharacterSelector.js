@@ -3,7 +3,6 @@
  */
 /* Defaults and Globals */
 
-
 var docheight = 0;
 var docwidth = 0;
 var imageInstance = null;
@@ -24,33 +23,34 @@ var hebrewList = ['א', 'ב', 'ג','ד','ה', 'ו', 'ז', 'ח' ,'ט', 'י', 'כ'
 
 
 classList = hebrewList
-var colorList =  ["#f23568","#6d38ff","#38ffd7","#fff238","#661641","#275fb3","#24a669","#a67b24","#ff38a2",
+var colorList =  ["#f23568","#6d38ff","#38ffd7","#fff238","#661641","#27eyboard5fb3","#24a669","#a67b24","#ff38a2",
     "#194973","#35f268","#7f441c","#801c79","#2a8ebf","#216616","#d97330","#da32e6","#196d73","#bdff38","#bf3e2a",
     "#3d1973","#30cdd9","#858c1f","#661616"];
 
 
 
-// var viewer = null;
+var viewer = null;
+
+var defaultServerPath = "http://www.homermultitext.org/iipsrv?DeepZoom=/project/homer/pyramidal/VenA/";
+var defaultServerSuffix = ".tif.dzi";
+var defaultLocalpath = "image_archive/";
+var defaultUrn = "";
 //
-// var defaultServerPath = "http://www.homermultitext.org/iipsrv?DeepZoom=/project/homer/pyramidal/VenA/";
-// var defaultServerSuffix = ".tif.dzi";
-// var defaultLocalpath = "image_archive/";
-// var defaultUrn = "";
+var serverPath = defaultServerPath;
+var serverSuffix = defaultServerSuffix;
+var localPath = defaultLocalpath;
+var localSuffix = "_RAW.jpg"; 
+var usePath = localPath;
+var useSuffix = localSuffix;
 //
-// var serverPath = defaultServerPath;
-// var serverSuffix = defaultServerSuffix;
-// var localPath = defaultLocalpath;
-// var localSuffix = "_RAW.jpg";
-// var usePath = localPath;
-// var useSuffix = localSuffix;
-//
-// var useLocal = true;
-//
-// var imgUrn;
+var useLocal = true;
+
+ var imgUrn;
 //
 //
-// var roiArray = [];
+ var roiArray = [];
 //var tsrc = getTileSource
+
 
 
 /* Main */
@@ -67,11 +67,15 @@ jQuery(function($){
         paramUrn = response[0];
         lineNo = response[1];
         wordNo = response[2];
+        
         imgUrn = paramUrn;
-        imageDrawer();
+
+        imageDrawer(); 
+
         initializeKeyboad(this);
     });
 });
+
 
 //loads in the image, crops it so that only the region of interest is visible, and sets up the annotation tools.
 function imageDrawer(){
@@ -129,7 +133,8 @@ function imageDrawer(){
             lockSkewingX: true,
             lockSkewingY: true,
             hasBorders: false,
-            hasControls: false
+            hasControls: false,
+            selectable: false
         });
         docheight = background.height;
         docwidth = background.width;
@@ -152,7 +157,6 @@ function imageDrawer(){
             hasBorders: false,
             hasControls: false
         });
-        canvas.add(background);
         canvas.add(imageInstance);
         imageInstance.selectable = true;
         canvas.renderAll();
@@ -162,7 +166,6 @@ function imageDrawer(){
     image.src = getImageSource(imgUrn);
     rerenderThatActuallyWorks();
 }
-
 
 
 function getImageLocation(imgUrn){
@@ -268,6 +271,7 @@ $('#undo').click(function(){
     AA.removeWithUpdate(obj[obj.length-1]);
     rerenderThatActuallyWorks();
 });
+
 
 function changeAnnotation(target){
     document.getElementById("active_annotation").value = target+1;
@@ -433,6 +437,8 @@ $("#submit").click(function() {
 
 
 
+
+
 $("#submitButton").click(function() {
     if(validateAnnoString() & validateAnnoImage()) {
         $('#image_imageContainer').hide();
@@ -496,3 +502,23 @@ function submitPost(x,outArray,xArray,yArray, anno){
         });
     }
 }
+$('#submitButton').click(function() {
+    var outArray = new Array(roiArray.length);
+    for(x = 0; x < roiArray.length; x++){
+        outArray[x] = imgUrn + "@" + roiArray[x].roi;
+        console.log('save '+ outArray[x]);
+    }
+    //console.log(JSON.stringify(roiArray["roi"]));
+    $.post("URNServlet", {
+        askResponse: "res",
+        type:"word",
+        data: JSON.stringify(outArray),
+        lineNo: lineNo
+    },function(responseText){
+        if(responseText === "TRUE") {
+            location.reload();
+        }else{
+            window.location = "/index.html";
+        }
+    });
+});

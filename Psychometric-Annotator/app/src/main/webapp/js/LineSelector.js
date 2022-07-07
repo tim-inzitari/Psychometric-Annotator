@@ -64,6 +64,7 @@ function initOpenSeadragon() {
         defaultZoomLevel: 1,
         tileSources: getTileSources(imgUrn),
         minZoomImageRatio: 0.1, // of viewer size
+        maxZoomLevel: 16,
         immediateRender: true
     });
     console.log('opening '+ imgUrn)
