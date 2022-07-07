@@ -4,6 +4,7 @@ ImageArchive/*
 database/*
 output/*
 **/image_archive/*
+ImagesBackup/*
 
 #but keep the folder structure
 !ImageArchive/.gitkeep
