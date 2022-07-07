@@ -12,6 +12,7 @@ var button_label;
 var block;
 var block_name;
 
+
 var extraChars= [["unknown/other", "&lt;UNK&gt;"]]
 
 unicodeDict = {}
@@ -410,7 +411,7 @@ function createROI(rect){
 
 $(document).on('focus','.focusInputClass', function() {
     lastFocused = this;   
-    console.log(lastFocused);
+    console.log('lastFocused-> ' + this);
 });
 
 
@@ -419,7 +420,7 @@ function addRoiListing(roiObj){
     var idForListing = idForMappedUrn(roiObj.index);
     var idForRect = idForMappedROI(roiObj.index);
     var groupClass = "image_roiGroup_" + roiObj.group;
-    var txtbox = "<input type='text' size='3' value='' class='keyboardInput focusInputClass' lang='" + defaultLang + "' maxlength='4' id='annoInput" + idForListing + "'  required>";
+    var txtbox = "<input type='text' size='3' value='' class='keyboardInput focusInputClass' lang='" + defaultLang + "' maxlength='4' id='annoInput_" + idForListing + "'  required>";
     var deleteLink = "<a class='deleteLink' id='delete" + idForListing + "' data-index='" + roiObj.index + "'></a>";
     var mappedUrnSpan = "<li class='" + groupClass + "' id='" + idForListing + "' style='display:flex;'>";
     mappedUrnSpan +=deleteLink + txtbox + roiObj.mappedUrn + "</li>";
@@ -445,7 +446,7 @@ function addRoiListing(roiObj){
     });
     
     // attach virtual keyboard
-    var kb_id = 'annoInput'+idForListing
+    var kb_id = 'annoInput_'+idForListing
     var myInput = document.getElementById(kb_id);
     if (!myInput.VKI_attached) VKI_attach(myInput);
 }
@@ -541,6 +542,7 @@ function clearJsRoiArray() {
 
 }
 
+
 function idForMappedUrn(i) {
     var s = "image_mappedUrn_" + (i)
     return s
@@ -560,6 +562,16 @@ function urnToRoiId(id) {
     var s = id.replace("image_mappedUrn_","image_mappedROI_")
     return s
 }
+function getImageLocation(imgUrn){
+    var splitUrn = imgUrn.split("@");
+    if(splitUrn.length <= 1){
+        return [0,0,1,1];
+    }else{
+        var vals = splitUrn[1].split(",");
+        return [vals[0]+0,vals[1]+0,vals[2]+0,vals[3]+0]
+    }
+}
+
 
 function getGroup(i){
 
@@ -639,19 +651,209 @@ function getTileSources(imgUrn){
     return ts
 }
 
+function Annotation(number, char, roiObj){
+    this.number = number;
+    this.char = char;
+    this.roiObj = roiObj;
+
+}
+function getImageSource(imgUrn){
+    var plainUrn = imgUrn.split("@")[0];
+    var imgId = plainUrn.split(":")[4];
+    var ts = "";
+    var localDir = plainUrn.split(":")[0] + "_" + plainUrn.split(":")[1] + "_" + plainUrn.split(":")[2] + "_" + plainUrn.split(":")[3] + "_/";
+    ts = "image_archive/" + plainUrn + "_RAW.jpg";
+    console.log('imgUrn' + imgUrn)
+    return ts;
+}
+function rectStuff(urn){
+    split = urn.split('@');
+    canvas = new fabric.Canvas('image_imageCanvas');
+    var image = new Image;
+    
+    image.onload=function() {
+        var loc = getImageLocation(imgUrn);
+        var x1 = image.width * loc[0];
+        var y1 = image.height * loc[1];
+        var width = image.width * loc[2];
+        var height = image.height * loc[3];
+        hori = -x1;
+        var background = new fabric.Image(image, {
+            left: -x1,
+            top: -y1,
+            angle: 0,
+            opacity: .5,
+            lockRotation: true,
+            lockScalingX: true,
+            lockScalingY: true,
+            lockSkewingX: true,
+            lockSkewingY: true,
+            hasBorders: false,
+            hasControls: false,
+            selectable: false
+        });
+        docheight = background.height;
+        docwidth = background.width;
+        imageInstance = new fabric.Image(image, {
+            left: -x1,
+            top: -y1,
+            angle: 0,
+            opacity: 1,
+             clipTo: function (ctx) {
+                 ctx.rect(x1 - (image.width / 2), y1 - (image.height / 2), width, height);
+             },
+            height: docheight,
+            width: docwidth,
+            lockRotation: true,
+            lockScalingX: true,
+            lockScalingY: true,
+            lockSkewingX: true,
+            lockSkewingY: true,
+            hasBorders: false,
+            hasControls: false
+        });
+        canvas.add(imageInstance);
+        canvas.renderAll();
+        imageInstance.selectable = false;
+    }
+    image.src = getImageSource(imgUrn);
+    rerenderThatActuallyWorks();
+    return canvas.toDataURL();
+
+
+}
+function rerenderThatActuallyWorks(){
+    canvas.renderAll();
+}
+function validateAnno(){
+    // validate all textboxes are filled first
+    $(".focusInputClass").each(function() {
+        if($(this).val ==''){
+            alert('Please fill out all annotations');
+            return false;
+        }
+    });
+
+    // ALL ARE VALIDATED
+    
+    roiArray.forEach(roiObj => {
+        var idForListing = idForMappedUrn(roiObj.index);
+        var groupClass = "image_roiGroup_" + roiObj.group;
+        var txtbox_id= '#annoInput_'+idForListing;
+        
+        console.log('roiobj roi ',roiObj.roi);
+
+        var anno = $(txtbox_id).val();
+        console.log('anno,group,id:',anno, roiObj.group, idForListing);
+
+        var myAnno = new Annotation(idForListing, anno, roiObj);
+        console.log('id '+idForListing)
+        annotationList.push(myAnno);
+        console.log('length' + annotationList.length)
+
+    });
+}
+
+
+
+function generateURN(anno) {
+    var rois = anno.roiObj.roi.split(',')
+    var plainUrn = imgUrn.split("@")[0];
+    return(plainUrn +"@"+rois[0]+","+rois[1]+","+rois[2]+","+rois[3]);
+}
+
+function buildAnnoString(){
+    var temp=[];
+    for (var x = 0; x<annotationList.length; x++){
+        temp.push(annotationList[x]);
+    }
+    return temp.join("");
+}
+
+$("#submitButton").click(function() {
+    validateAnno();
+    // if all required are filled
+    //to do
+
+    var outArray=[];
+    var xArray=[];
+    var yArray=[];
+
+    for (var x = 0; x <annotationList.length; x++) {
+        // get corners for each annotation
+        xArray[x] = annotationList[x].roiObj.roi.split(',')[0];
+        console.log('added to x array',xArray[x]);
+        yArray[x] = annotationList[x].roiObj.roi.split(',')[1];
+        console.log('added to y array',yArray[x]);
+        outArray.push(generateURN(annotationList[x]));
+        console.log('added to outarray',generateURN(annotationList[x]))
+        //outArray.push(generateURN(annotationList[x]));
+    }
+
+    console.log('xArray '+xArray);
+    console.log('yarray '+yArray);
+    console.log('outarray '+outArray)
+    console.log('annolist '+ annotationList)
+    submitPost(0,outArray, xArray, yArray, buildAnnoString());
+
+});
+
+function submitPost(x, outArray, xArray, yArray, anno) {
+    if (x===annotationList.length){
+        $.post('URNServlet', {
+            askResponse: "res",
+            annotation: anno,
+            type:"char",
+            data: JSON.stringify(outArray),
+            wordNo: wordNo,
+            lineNo: lineNo
+        },function(responseText){
+            if(responseText === "TRUE") {
+                location.reload();
+            }else{
+                window.location = "/index.html";
+            }
+        });
+    }else{
+
+        // MAKE CROPPED IMAGE
+        var imgRet = rectStuff(outArray[x]) // MAKE CROPPED IMAGE HERE
+        
+        console.log('imgret',imgRet);
+
+
+
+        
+
+        $.post("URNServlet", {
+            askResponse: "img",
+            urn:imgUrn,
+            id:x,
+            x:xArray[x],
+            y:yArray[x],
+            data:imgRet,
+            wordNo: wordNo,
+            lineNo: lineNo,
+            annotation:anno.charAt(x)
+          }, function(){
+            submitPost(x+1,outArray,xArray,yArray,anno);
+        });
+    }
+}
+console.log('roi array: ',roiArray)
 $('#submitButton').click(function() {
     var outArray = new Array(roiArray.length);
+    alert('roi: '+roiArray[0].roi+'\nimgUrn: '+imgUrn+'\ngroup: '+roiArray[0].group+'\nid for mapped urn '+idForMappedUrn(roiArray[0].index));
     for(x = 0; x < roiArray.length; x++){
         outArray[x] = imgUrn + "@" + roiArray[x].roi;
         console.log('save '+ outArray[x]);
     }
+    alert('hi')
     //console.log(JSON.stringify(roiArray["roi"]));
     $.post("URNServlet", {
         askResponse: "res",
-        type:"char",
-        annotation: 'c',
+        type:"word",
         data: JSON.stringify(outArray),
-        wordNo: wordNo,
         lineNo: lineNo
     },function(responseText){
         if(responseText === "TRUE") {
