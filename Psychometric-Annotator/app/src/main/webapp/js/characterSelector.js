@@ -409,8 +409,8 @@ function createROI(rect){
 }
 
 $(document).on('focus','.focusInputClass', function() {
-    lastFocused = $(".focusInputClass");   
-    alert(lastFocused);
+    lastFocused = this;   
+    console.log(lastFocused);
 });
 
 

@@ -23,10 +23,10 @@ unicodeNameCSV.forEach(int_name => {
 // so that it can known to additional character buttons
 var lastFocused;
 
-$('.focusInputClass').focus(function() {
-    lastFocused = this;
-    console.log('last focused is this')
-}) 
+$(document).on('focus','.focusInputClass', function() {
+    lastFocused = this;   
+    console.log(lastFocused);
+});
 
 //-----------------------------------------------------------
 //-----------------------------------------------------------
