@@ -119,22 +119,22 @@ function makeTable(block_name){
     var i = 0;
     chars.forEach(char => {
         // Start a row if needed
-        if(cur_col==0){content+='<tr id="dialog_table_row_'+cur_row+'">';}
-
         intCode = char.charCodeAt(0).toString(10)
         console.log('here')
         console.log('ጐ'.charCodeAt(0).toString(10))
         console.log(unicodeDict[1424])
-        content+='<td>'+unicodeDict[intCode] +'<button onclick="addC(this)" id="dialogCharButton_'+i+'" value='+intCode+'>'+String.fromCharCode(intCode)+'</td>';
-        // increase col check, end a row if needed
-        // increase char number
-        cur_col +=1;
-        i +=1
-        if (cur_col == n_d_cols) {
-            cur_col = 0;
-            cur_row+=1;
-            content += '</tr>'
-        }
+        if (!(!(intCode in unicodeDict))){
+            if(cur_col==0){content+='<tr id="dialog_table_row_'+cur_row+'">';}
+            content+='<td>'+unicodeDict[intCode] +'<button onclick="addC(this)" id="dialogCharButton_'+i+'" value='+intCode+'>'+String.fromCharCode(intCode)+'</td>';
+            // increase col check, end a row if needed
+            // increase char number
+            cur_col +=1;
+            i +=1
+            if (cur_col == n_d_cols) {
+                cur_col = 0;
+                cur_row+=1;
+                content += '</tr>'
+        }}
     });
 
     // close table and append it to div
