@@ -843,12 +843,10 @@ function submitPost(x, outArray, xArray, yArray, anno) {
 console.log('roi array: ',roiArray)
 $('#submitButton').click(function() {
     var outArray = new Array(roiArray.length);
-    alert('roi: '+roiArray[0].roi+'\nimgUrn: '+imgUrn+'\ngroup: '+roiArray[0].group+'\nid for mapped urn '+idForMappedUrn(roiArray[0].index));
     for(x = 0; x < roiArray.length; x++){
         outArray[x] = imgUrn + "@" + roiArray[x].roi;
         console.log('save '+ outArray[x]);
     }
-    alert('hi')
     //console.log(JSON.stringify(roiArray["roi"]));
     $.post("URNServlet", {
         askResponse: "res",
