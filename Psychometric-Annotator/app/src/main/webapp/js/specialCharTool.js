@@ -1,3 +1,9 @@
+/*
+HELPS ADD SPECIAL CHARACTERS FROM UNICODE TO THE SYSTEM
+RIGHT NOW ALL UNICODE CHARACTERS AND TRANSFERED AND USED
+USING THIER DECIMAL REPRESENTIVE NUMBER AS THE VALUE
+*/
+
 // initialize 
 var unicodeBlockSet = new BlockSet();
 var label;
@@ -12,6 +18,15 @@ unicodeNameCSV.forEach(int_name => {
     unicodeDict[int_name[0]] = int_name[1]
     
 });
+
+// have a variable to keep track of last focused text box
+// so that it can known to additional character buttons
+var lastFocused;
+
+$('.focusInputClass').focus(function() {
+    lastFocused = this;
+    console.log('last focused is this')
+}) 
 
 //-----------------------------------------------------------
 //-----------------------------------------------------------
@@ -64,6 +79,14 @@ function labelandbuttonHtmlCharButton(label, button_label){
     var html= labelHtml+buttonHtml
     return html
 }
+
+function addText(obj) {
+    console.log('last focused' + lastFocused);
+    console.log('object ' + obj);
+    console.log('object val ' + obj.value);
+    lastFocused.value = obj.value;
+}
+
 var n_e_cols = 8
 function makeSuperTable() {
     $('#extra_char_buttons').empty();
@@ -80,7 +103,7 @@ function makeSuperTable() {
 
         if(cur_col==0){content+='<tr id="dialog_table_row_'+cur_row+'">';}
 
-        content+= '<td><label>'+label+'</label><button id="extraChar_'+i+'">'+char+'</button></td>';
+        content+= '<td><label>'+label+'</label><button id="extraChar_'+i+'" onclick="addText(this)" value="'+char+'">'+char+'</button></td>';
 
         cur_col +=1;
         i +=1
@@ -120,9 +143,9 @@ function makeTable(block_name){
     chars.forEach(char => {
         // Start a row if needed
         intCode = char.charCodeAt(0).toString(10)
-        console.log('here')
-        console.log('ጐ'.charCodeAt(0).toString(10))
-        console.log(unicodeDict[1424])
+        //console.log('here')
+        //console.log('ጐ'.charCodeAt(0).toString(10))
+        //console.log(unicodeDict[1424])
         if (!(!(intCode in unicodeDict))){ // remove gaps in unicode
             if(cur_col==0){content+='<tr id="dialog_table_row_'+cur_row+'">';}
             content+='<td>'+unicodeDict[intCode] +'<button onclick="addC(this)" id="dialogCharButton_'+i+'" value='+intCode+'>'+String.fromCharCode(intCode)+'</td>';
@@ -143,7 +166,7 @@ function makeTable(block_name){
     $('#dialog_table_div').append(content);
     
 }
-makeTable('Basic Latin')
+
 
 
 //-----------------------------------------------------------
