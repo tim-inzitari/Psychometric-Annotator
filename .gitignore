@@ -4,6 +4,7 @@ ImageArchive/*
 database/*
 output/*
 **/image_archive/*
+ImagesBackup/*
 
 #but keep the folder structure
 !ImageArchive/.gitkeep
@@ -21,3 +22,4 @@ output/*
 
 # ignore usage scripts
 Psychometric-Annotator/update.sh
+copyimages.sh
