@@ -10,13 +10,13 @@ $(document).ready(function() {
         var output = responseText.split(",");
         if(output[0] === "TRUE"){
             $('#lines').show();
-        }
+        }/*
         if(output[1] === "TRUE"){
             $('#words').show();
         }
         if(output[2] === "TRUE"){
             $('#characters').show();
-        }
+        }*/
         if(output[3] === "TRUE"){
             $('#letters').show();
         }
