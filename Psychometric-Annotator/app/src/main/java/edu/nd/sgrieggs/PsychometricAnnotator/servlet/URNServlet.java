@@ -310,7 +310,7 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
         User active = userList.get(user);
         // destringify urnroi list and lineannotation list respectfully
         String[] temp2 = deStringify(input, 2);
-        String[] temp3 = deStringify(lineString, 1);
+        String[] temp3 = deStringify(lineString, 2);
         log.severe("in handle: "+ temp2[0]);
         boolean test = active.returnPage(temp2, temp3);
         return test;
