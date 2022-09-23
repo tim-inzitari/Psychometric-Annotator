@@ -701,7 +701,7 @@ function submitPost(x, outArray,xArray, yArray, annotationList){
             }else{
                 console.log('fail res '+ x)
                 console.log('anno: '+annotationList[x] +" data: " + outArray[x])
-                //window.location = "/index.html";
+                window.location = "/index.html";
             }
         });
         
