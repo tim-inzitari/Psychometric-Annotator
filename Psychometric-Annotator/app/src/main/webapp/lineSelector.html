@@ -15,6 +15,13 @@
 	<script type="text/javascript" src="js/selection.js"></script>
 	<script type="text/javascript" src="js/selectionoverlay.js"></script>
 	<script type="text/javascript" src="js/selectionrect.js"></script>
+	<link href="css/jquery-ui.min.css" rel="stylesheet">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.17/fabric.min.js"></script>
+	<script src="js/blockRanges.js"></script>
+    <script src="js/unicodeNames.js"></script>
+	<script src="js/jquery.csv.min.js"></script>
+    <script src="js/UnicodeBlockSet.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/keyboard.css">
 	<link rel="stylesheet" type="text/css" href="css/keyboard.css">
 	<script type="text/javascript" src="js/keyboard.js" charset="UTF-8"></script>
 </head>
@@ -56,7 +63,32 @@
 
 	</div>
 
+	<div id="'specialCharTool">
+		<h2 class="demoHeaders">Special Character Tool</h2>
 
+		<!--Already added special character list-->
+		<div id='extra_char_buttons' >
+		</div>
+
+		<p>
+			<button id="dialog-link" class="ui-button ui-corner-all ui-widget">
+				Add More Special Characters To Table
+			</button>
+		</p>
+		<div id="dialog" title="Add More Special Characters">
+			<!--Select Menu-->
+			<label>Selected Unicode Block</label>
+			<select id="selectmenu">
+				<option disabled selected>Please Select Unicode Block</option>
+				
+
+			</select>
+			<p> Buttons add character to list automatically.</p>
+			<p><b>Note:</b>Unicode blocks may contain gaps of non-visible or computer use only characters, ignore those.</p>
+			<div id="dialog_table_div">
+
+
+		</div>
 
 	<footer>
 		<!-- modified copyright message -->
@@ -66,7 +98,7 @@
 
 	</footer>
 
-
+	<script src="js/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="js/LineSelector.js"></script>
 
 
