@@ -1,5 +1,7 @@
 drop database documents;
-create database documents;
+create database documents CHARACTER SET utf8;
+
+
 CREATE USER 'software'@'localhost' IDENTIFIED BY 'it doesn''t matter how secure this password is, because the database will be restricted to only allow local connections';
 GRANT ALL PRIVILEGES ON documents.* To 'software'@'localhost' IDENTIFIED BY 'it doesn''t matter how secure this password is, because the database will be restricted to only allow local connections';
 FLUSH PRIVILEGES;

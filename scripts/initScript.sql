@@ -1,6 +1,5 @@
 drop database documents;
-create database documents;
-
+create database documents CHARACTER SET utf8;
 USE documents;
 create table trans(
 	ID varchar(20) NOT NULL,
