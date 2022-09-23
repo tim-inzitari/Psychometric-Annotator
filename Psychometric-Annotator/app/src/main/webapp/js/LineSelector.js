@@ -24,6 +24,8 @@ var useLocal = true;
 var imgUrn;
 
 
+var defaultLang = 'he' // 2 character code for default language of keyboard
+
 var roiArray = [];
 
 //var tsrc = getTileSource
@@ -154,9 +156,10 @@ function addRoiListing(roiObj){
     var idForListing = idForMappedUrn(roiObj.index);
     var idForRect = idForMappedROI(roiObj.index);
     var groupClass = "image_roiGroup_" + roiObj.group;
+    var txtbox = "<input type='text' size='30' value='' class='keyboardInput focusInputClass' lang='" + defaultLang + "'  id='annoInput_" + idForListing + "'  required>";
     var deleteLink = "<a class='deleteLink' id='delete" + idForListing + "' data-index='" + roiObj.index + "'></a>";
     var mappedUrnSpan = "<li class='" + groupClass + "' id='" + idForListing + "'>";
-    mappedUrnSpan += deleteLink + roiObj.mappedUrn + "</li>";
+    mappedUrnSpan += deleteLink + roiObj.mappedUrn + '\n' + txtbox + "</li>";
 
     $("#image_urnList").append(mappedUrnSpan);
     // <a class="image_deleteUrn">✖︎</a>
@@ -177,6 +180,10 @@ function addRoiListing(roiObj){
         console.log("Delete: " + i)
         deleteRoi(parseInt(i))
     });
+    // attach virtual keyboard
+    var kb_id = 'annoInput_'+idForListing
+    var myInput = document.getElementById(kb_id);
+    if (!myInput.VKI_attached) VKI_attach(myInput);
 }
 
 function deleteRoi(c){
