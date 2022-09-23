@@ -379,6 +379,7 @@ function addRoiListing(roiObj){
     $("#image_urnList").append(mappedUrnSpan);
     // <a class="image_deleteUrn">✖︎</a>
     $("li#" + idForListing ).on("click",function(){
+        console.log(idForListing + ' li event');
         if ( $(this).hasClass("image_roiGroupSelected")){
             removeAllHighlights();
         } else {
@@ -387,6 +388,16 @@ function addRoiListing(roiObj){
             var rectId = urnToRoiId(this.id);
             $("a#"+rectId).addClass("image_roiGroupSelected");
         }
+    });
+
+    $("input#annoInput_" + idForListing).on('focus', function(){
+        console.log(idForListing + ' inputbox event');
+
+        removeAllHighlights();
+        $('li#'+idForListing).addClass("image_roiGroupSelected");
+        var rectId = urnToRoiId(idForListing);
+        $("a#"+rectId).addClass("image_roiGroupSelected");
+        
     });
 
     $("a#delete"+idForListing).on("click",function(){
@@ -431,7 +442,6 @@ $(document).on('change', '#l2r',  function() {
     txtDir = $(this).find(":selected").val();
     console.log("txt dir is now "+ txtDir);
     $('input[type=text]').each(function() {
-        console.log(this)
         $(this).attr('dir', txtDir);
     });
 });
@@ -477,7 +487,7 @@ function addRoiOverlay(roiObj){
     elt.dataset.urn = roiObj.mappedUrn;
 
     viewer.addOverlay(elt,osdRect);
-    console.log(roi);
+
 
     $("a#" + elt.id ).on("click",function(){
         if ( $(this).hasClass("image_roiGroupSelected")){
@@ -489,6 +499,9 @@ function addRoiOverlay(roiObj){
             $("li#"+liId).addClass("image_roiGroupSelected");
         }
     });
+
+
+
 }
 
 function removeAllHighlights(){
