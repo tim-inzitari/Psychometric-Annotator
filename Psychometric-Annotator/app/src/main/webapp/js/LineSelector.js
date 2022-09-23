@@ -226,9 +226,9 @@ var localPath = defaultLocalpath;
 var localSuffix = ".dzi";
 var usePath = localPath;
 var useSuffix = localSuffix;
-
+var annotationList = []
 var useLocal = true;
-
+var txtDir = 'rtl'
 var imgUrn;
 
 
@@ -363,13 +363,15 @@ $(document).on('focus','.focusInputClass', function() {
     console.log('lastFocused-> ' + this);
 });
 
+
+
 function addRoiListing(roiObj){
     console.log(roiObj.roi);
     // image_urnList
     var idForListing = idForMappedUrn(roiObj.index);
     var idForRect = idForMappedROI(roiObj.index);
     var groupClass = "image_roiGroup_" + roiObj.group;
-    var txtbox = "<input type='text' size='30' value='' class='keyboardInput focusInputClass' lang='" + defaultLang + "'  id='annoInput_" + idForListing + "'  required>";
+    var txtbox = "<input type='text' size='30' value='' class='keyboardInput focusInputClass' lang='" + defaultLang + "'  id='annoInput_" + idForListing + "' dir='" + txtDir + "' required>";
     var deleteLink = "<a class='deleteLink' id='delete" + idForListing + "' data-index='" + roiObj.index + "'></a>";
     var mappedUrnSpan = "<li class='" + groupClass + "' id='" + idForListing + "'>";
     mappedUrnSpan += deleteLink + roiObj.mappedUrn + '\n' + txtbox + "</li>";
@@ -417,12 +419,22 @@ function deleteRoi(c){
         addRoiListing(roiArray[i]);
     }
 }
-function Annotation(number, char, roiObj){
+function Annotation(number, str, roiObj){
     this.number = number;
-    this.char = char;
+    this.str = str;
     this.roiObj = roiObj;
 
 }
+
+// l2r toggle implement
+$(document).on('change', '#l2r',  function() {
+    txtDir = $(this).find(":selected").val();
+    console.log("txt dir is now "+ txtDir);
+    $('input[type=text]').each(function() {
+        console.log(this)
+        $(this).attr('dir', txtDir);
+    });
+});
 
 function refreshRois(){
     var tempArray = []
@@ -531,6 +543,36 @@ function getGroup(i){
     return rv
 
 }
+function validateAnno(){
+    // validate all textboxes are filled first
+    $(".focusInputClass").each(function() {
+        if($(this).val ==''){
+            alert('Please fill out all annotations');
+            return false;
+        }
+    });
+
+    // ALL ARE VALIDATED
+    
+    roiArray.forEach(roiObj => {
+        var idForListing = idForMappedUrn(roiObj.index);
+        var groupClass = "image_roiGroup_" + roiObj.group;
+        var txtbox_id= '#annoInput_'+idForListing;
+        
+        console.log('roiobj roi ',roiObj.roi);
+
+        var anno = $(txtbox_id).val();
+        console.log('anno,group,id:',anno, roiObj.group, idForListing);
+
+        var myAnno = new Annotation(idForListing, anno, roiObj);
+        console.log('id '+idForListing)
+        annotationList.push(myAnno);
+        console.log('length' + annotationList.length)
+
+    });
+
+    return true;
+}
 
 function reloadImage(){
     clearJsRoiArray()
@@ -604,6 +646,7 @@ function getTileSources(imgUrn){
 }
 
 $("#submitButton").click(function() {
+    if (!validateAnno()){
     console.log("here");
     var outArray = new Array(roiArray.length);
     console.log('here')
@@ -623,5 +666,10 @@ $("#submitButton").click(function() {
             window.location = "/index.html";
         }
     });
+    }
+    else{
+        console.log('invalid response');
+        return false;
+    }
 });
 
