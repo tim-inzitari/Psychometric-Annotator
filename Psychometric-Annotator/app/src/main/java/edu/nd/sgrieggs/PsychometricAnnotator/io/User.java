@@ -6,18 +6,20 @@ import java.sql.*;
 import java.util.logging.Logger;
 
 
-
+import java.io.PrintWriter;
+import java.io.StringWriter;
 /**
  * Created by smgri on 6/28/2017.
  */
 public class User {
 
-
+    // Line seg is the new line annotation system
 
     private static final Logger log = Logger.getLogger(User.class.getName());
     private String user;
     private Letter activeLetter;
     private Line activeLine;
+    private LineSeg activeLineSeg;
     private Page activePage;
     private Word activeWord;
 
@@ -31,6 +33,7 @@ public class User {
         this.activeLine = null;
         this.activeWord = null;
         this.activeLetter = null;
+        this.activeLineSeg = null;
     }
 
     public String toString(){
@@ -50,6 +53,18 @@ public class User {
     }
 
     public String getNextLine(){
+        if(this.activeLine != null){
+            return this.activeLine.getURN()+"-"+this.activeLine.getLineNo();
+        }else{
+            loadLineDB();
+            if(this.activeLine != null) {
+                return this.activeLine.getURN()+"-"+this.activeLine.getLineNo();
+            }
+        }
+        return null;
+    }
+
+    public String getNextLineSeg(){
         if(this.activeLine != null){
             return this.activeLine.getURN()+"-"+this.activeLine.getLineNo();
         }else{
@@ -99,6 +114,21 @@ public class User {
         saveLinesDB(this.activePage.getID(), plines);
         return hasPageDB();
     }
+    // Line String
+    public boolean returnPage(String[] plines, String annotations){
+        String urn = plines[0].split("@")[0];
+        log.severe(urn);
+        if(!this.activePage.getURN().equals(urn)){
+            int id = this.lookupIdDB(urn);
+            if (id == -1){
+                return true;
+            }else{
+                this.activePage = new Page(id,urn);
+            }
+        }
+        saveLinesSegDB(this.activePage.getID(), plines, annotations);
+        return hasPageDB();
+    }
 
     public boolean returnLine(String[] lwords, int lineNo){
         String urn = lwords[0].split("@")[0];
@@ -114,6 +144,7 @@ public class User {
         saveWordsDB(this.activeLine.getDocID(),this.activeLine.getLineNo(),lwords);
         return hasLineDB();
     }
+
 
     public boolean returnWord(String annotation, String[] wletters, int lineNo, int wordNo) {
         String urn = wletters[0].split("@")[0];
@@ -143,11 +174,12 @@ public class User {
     }
 
     public boolean[] initalCheck(){
-        boolean out[] = new boolean[4];
+        boolean out[] = new boolean[5];
         out[0] = hasPageDB();
         out[1] = hasLineDB();
         out[2] = hasWordDB();
         out[3] = hasLetterDB();
+        out[4] = hasLineSegDB();
         return out;
     }
 
@@ -303,6 +335,64 @@ public class User {
                 saveLines.setInt(1,page);
                 saveLines.setInt(2,x);
                 saveLines.setString(3,lines[x]);
+                saveLines.executeUpdate();
+            }
+            saveLines.close();
+            String usePageSQL = "UPDATE doc SET used = true WHERE ID = ?";
+            usePage = dbc.prepareStatement(usePageSQL);
+            usePage.setInt(1,this.activePage.getID());
+            usePage.executeUpdate();
+            usePage.close();
+            dbc.close();
+            this.activePage = null;
+        }catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (saveLines != null) {
+                    saveLines.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (usePage != null) {
+                    usePage.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+        }
+    }
+
+
+    private void saveLinesSegDB(int page, String[] lines, String annotations){
+        Connection dbc = null;
+        PreparedStatement saveLines = null;
+        PreparedStatement usePage = null;
+        try {
+            dbc = getConnection();
+            String saveLinesSQL = "INSERT IGNORE INTO lineSeg (docID,lineSegNo,URN, lineString) VALUES (?,?,?,?)";
+            saveLines = dbc.prepareStatement(saveLinesSQL);
+            for(int x = 0; x < lines.length; x++){
+                saveLines.setInt(1,page);
+                saveLines.setInt(2,x);
+                saveLines.setString(3,lines[x]);
+                saveLines.setString(4,annotations);
                 saveLines.executeUpdate();
             }
             saveLines.close();
@@ -791,6 +881,61 @@ public class User {
         }
     }
 
+    private boolean hasLineSegDB(){
+        Connection dbc = null;
+        PreparedStatement loadLine = null;
+        ResultSet loadLineRes = null;
+        boolean out = false;
+        try {
+            dbc = getConnection();
+            String loadLineSQL = "SELECT * \n" +
+                    "FROM lineSeg\n" +
+                    "WHERE used = false\n" +
+                    "ORDER BY RAND() LIMIT 1";
+            loadLine = dbc.prepareStatement(loadLineSQL);
+            loadLineRes = loadLine.executeQuery();
+            if (loadLineRes.next()) {
+                out = true;
+            }
+            loadLineRes.close();
+            loadLine.close();
+            dbc.close();
+        } catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (loadLineRes != null) {
+                    loadLineRes.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (loadLine != null) {
+                    loadLine.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            return out;
+        }
+    }
+
+
     private boolean hasWordDB(){
         Connection dbc = null;
         PreparedStatement loadWord = null;
@@ -895,7 +1040,7 @@ public class User {
                     dbc.close();
                 }
             } catch (SQLException se) {
-                log.severe("SQL Exception: " + se.getMessage());
+                log.severe("SQL Exception: " + se.getMessage()+se.getStackTrace().toString());
                 se.printStackTrace();
             }
             return out;
@@ -904,6 +1049,8 @@ public class User {
 
     private int lookupIdDB(String urn){
         Connection dbc = null;
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
         PreparedStatement loadId = null;
         ResultSet loadIdRes = null;
         int out = -1;
@@ -921,7 +1068,8 @@ public class User {
             loadId.close();
             dbc.close();
         } catch (SQLException se) {
-            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace(pw);
+            log.severe("SQL Exception: " + se.getMessage()+ sw.toString());
             se.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
@@ -932,7 +1080,8 @@ public class User {
                     loadIdRes.close();
                 }
             } catch (SQLException se) {
-                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace(pw);
+                log.severe("SQL Exception: " + se.getMessage() + sw.toString());
                 se.printStackTrace();
             }
             try {
@@ -940,7 +1089,8 @@ public class User {
                     loadId.close();
                 }
             } catch (SQLException se) {
-                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace(pw);
+                log.severe("SQL Exception: " + se.getMessage()+ sw.toString());
                 se.printStackTrace();
             }
             try {
@@ -948,7 +1098,8 @@ public class User {
                     dbc.close();
                 }
             } catch (SQLException se) {
-                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace(pw);
+                log.severe("SQL Exception: " + se.getMessage()+ sw.toString());
                 se.printStackTrace();
             }
             return out;

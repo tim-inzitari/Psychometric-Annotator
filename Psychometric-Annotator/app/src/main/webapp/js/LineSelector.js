@@ -556,6 +556,8 @@ function getGroup(i){
     return rv
 
 }
+
+
 function validateAnno(){
     // validate all textboxes are filled first
     $(".focusInputClass").each(function() {
@@ -577,9 +579,8 @@ function validateAnno(){
         var anno = $(txtbox_id).val();
         console.log('anno,group,id:',anno, roiObj.group, idForListing);
 
-        var myAnno = new Annotation(idForListing, anno, roiObj);
-        console.log('id '+idForListing)
-        annotationList.push(myAnno);
+        console.log('id '+idForListing);
+        annotationList.push(anno);
         console.log('length' + annotationList.length)
 
     });
@@ -659,30 +660,76 @@ function getTileSources(imgUrn){
 }
 
 $("#submitButton").click(function() {
-    if (!validateAnno()){
-    console.log("here");
-    var outArray = new Array(roiArray.length);
-    console.log('here')
-    for(x = 0; x < roiArray.length; x++){
+    if (validateAnno()){
+    
+    var outArray=[];
+    var xArray=[];
+    var yArray=[];
+
+
+    //var outArray = new Array(roiArray.length);
+    for(var x = 0; x < annotationList.length; x++){
+        xArray[x] = roiArray[x].roi.split(',')[0];
+        console.log('added to x array',xArray[x]);
         outArray[x] = imgUrn + "@" + roiArray[x].roi;
+        yArray[x] = roiArray[x].roi.split(',')[1];
+        console.log('added to y array',yArray[x]);
         console.log('save: '+ outArray[x]);
     }
-    $.post("URNServlet", {
-        askResponse: "res",
-        type:"line",
-        data: JSON.stringify(outArray)
-    },function(responseText){
-        console.log(responseText);
-        if(responseText === "TRUE") {
-            location.reload();
-        }else{
-            window.location = "/index.html";
-        }
-    });
+
+    submitPost(0,outArray, xArray, yArray, annotationList); 
     }
     else{
         console.log('invalid response');
         return false;
     }
-});
+
+
+
+    });
+function submitPost(x, outArray,xArray, yArray, annotationList){
+    if(x===annotationList.length-1){
+        $.post("URNServlet", {
+            askResponse: "res",
+            type:"lineseg",
+            data: JSON.stringify(outArray[x]),
+            lineString: annotationList[x]
+        },function(responseText){
+            console.log(responseText);
+            if(responseText === "TRUE") {
+                location.reload();
+            }else{
+                console.log('fail res '+ x)
+                console.log('anno: '+annotationList[x] +" data: " + outArray[x])
+                //window.location = "/index.html";
+            }
+        });
+        
+        
+        }else{
+
+            //var imgRet = rectStuff(outArray[x]) // MAKE CROPPED IMAGE HERE
+
+            //console.log('imgret',imgRet);
+            submitPost(x+1,outArray,xArray,yArray,annotationList);
+            /*
+            $.post("URNServlet", {
+                askResponse: "imgLine",
+                urn:imgUrn,
+                id:x,
+                x:xArray[x],
+                y:yArray[x],
+                data:imgRet,
+                annotation:annotationList[x]
+              }, function(){
+                submitPost(x+1,outArray,xArray,yArray,annotationList);
+
+            });
+            */
+        
+
+            
+        }
+}   
+
 

@@ -3,14 +3,14 @@ package edu.nd.sgrieggs.PsychometricAnnotator.servlet;
 import edu.nd.sgrieggs.PsychometricAnnotator.bo.obj.Word;
 import edu.nd.sgrieggs.PsychometricAnnotator.io.LetterSaver;
 import edu.nd.sgrieggs.PsychometricAnnotator.io.User;
-
 import javax.servlet.ServletContext;
 import java.io.*;
 import java.util.ArrayList;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.logging.Logger;
-
 
 /**
  * Created by smgri on 6/21/2017.
@@ -35,6 +35,9 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
     }
 
     protected void doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
+
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
         String askResponse = request.getParameter("askResponse");
         // String user = request.getUserPrincipal().getName();
         String user = getClientIpAddress(request);
@@ -52,6 +55,9 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
 
         if (askResponse.toLowerCase().equals("res")) {
             String type = request.getParameter("type").toLowerCase();
+
+            // Character level annotation Segmented Line function
+
             if (type.equals("line")) {
                 String in = request.getParameter("data");
                 boolean out = false;
@@ -73,6 +79,32 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
                     response.getWriter().write("FALSE");
                 }
             }
+            // line level annotation style line segement
+            else if (type.equals("lineseg")) {
+                String in = request.getParameter("data");
+                String lineString = request.getParameter("lineString");
+                boolean out = false;
+                try{
+                    out = handleLineSegReturn(translateUser(user), in, lineString);
+                }catch(Exception e){
+                    e.printStackTrace(pw);
+                    log.severe("Error handling lineSeg return: " + e.getMessage() + sw.toString());
+                    Enumeration<String> params = request.getParameterNames();
+                    String logMessage = "";
+                    while(params.hasMoreElements()){
+                        String paramName = params.nextElement();
+                        logMessage = logMessage + "Parameter Name - " + paramName + ", Value - " + request.getParameter(paramName) + "\n";
+                    }
+                    log.severe(logMessage);
+                }
+                log.severe("Got here in line seg");
+                if (out) {
+                    response.getWriter().write("TRUE");
+                } else {
+                    response.getWriter().write("FALSE");
+                }
+            }
+
             else if (type.equals("word")) {
                 String in = request.getParameter("data");
                 System.out.println(request.getParameter("lineNo"));
@@ -177,7 +209,32 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
             }
 
 
-        } else if(askResponse.toLowerCase().equals("ask")){
+        } else if(askResponse.toLowerCase().equals("imgLine")){
+            //The response is a letter image
+            int x = (int)Double.parseDouble(request.getParameter("x"));
+            int y = (int)Double.parseDouble(request.getParameter("y"));
+            String imgURL = request.getParameter("data");
+            String urn = request.getParameter("urn");
+            int cn = Integer.parseInt(request.getParameter("id"));
+            char anno = request.getParameter("annotation").toCharArray()[0];
+
+
+
+            log.info("saving input letter to " + (String)ctx.getAttribute("FILES_DIR")+"....");
+            LetterSaver saver = new LetterSaver((String)ctx.getAttribute("FILES_DIR"), urn, cn,x, y ,x, y, user, imgURL, anno);
+            if(saver.saveImage()){
+                saver = null;
+                log.info("success!");
+                response.getWriter().write("True");
+            }else{
+                log.severe("failure..");
+                saver = null;
+            }
+
+
+        }
+        
+        else if(askResponse.toLowerCase().equals("ask")){
             String type = request.getParameter("type");
             if(type == null){
                 log.warning("Invalid Response");
@@ -189,7 +246,10 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
                 response.getWriter().write(handleCharacterSelector(translateUser(user)));
             } else if (type.toLowerCase().equals("charann")) {
                 response.getWriter().write(handleCharacterAnnotator(translateUser(user)));
-            } else {
+            }
+            else if(type.toLowerCase().equals("linesegselector")) {
+                response.getWriter().write(handleLineSegSelector(translateUser(user)));}
+            else {
                 response.getWriter().write("Invalid request");
                 log.severe("INVALID REQUEST RECEIVED");
                 Enumeration<String> params = request.getParameterNames();
@@ -227,6 +287,11 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
         return userList.get(user).getNextPage();
     }
 
+    private String handleLineSegSelector(int user) {
+        //placeholder
+        return userList.get(user).getNextPage();
+    }
+
     private String handleCharacterSelector(int user) { return userList.get(user).getNextWord();
     }
 
@@ -236,6 +301,18 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
         String[] temp2 = deStringify(input);
         boolean test = active.returnPage(temp2);
         return test;
+    }
+
+    private boolean handleLineSegReturn(int user, String input, String lineString) {
+        log.severe("user: " + user);
+        log.severe("input: "+input);
+        log.severe("lineString: " + lineString);
+        User active = userList.get(user);
+        String[] temp2 = deStringify(input);
+        log.severe("in handle: "+ temp2[0]);
+        boolean test = active.returnPage(temp2, lineString);
+        return test;
+
     }
 
     private boolean handleWordReturn(int user, String input, int lineNo) {
@@ -276,7 +353,9 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
     }
 
     private String[] deStringify(String input) {
-        input = input.substring(2, input.length() - 2);
+        log.info("destring: "+ input);
+        input = input.substring(1, input.length() - 1);
+        log.info("Destring2 "+ input);
         String[] output = input.split("\",\"");
         return output;
     }

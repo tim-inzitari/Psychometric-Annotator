@@ -22,6 +22,17 @@ create table line(
     PRIMARY KEY(docID,lineNo)
 );
 
+create table lineSeg(
+	docID int NOT NULL,
+    lineSegNo int NOT NULL,
+    URN varchar(150),
+    lineString varchar(150),
+    used boolean DEFAULT false,
+    CONSTRAINT fk_line_seg_doc FOREIGN KEY (docID) REFERENCES doc(ID) ON DELETE CASCADE,
+    PRIMARY KEY(docID,lineSegNo)
+);
+
+
 create table word(
 	docID int NOT NULL,
     lineNo int NOT NULL,
