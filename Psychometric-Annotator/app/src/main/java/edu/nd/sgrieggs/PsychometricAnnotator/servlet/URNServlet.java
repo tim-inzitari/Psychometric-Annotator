@@ -308,9 +308,11 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
         log.severe("input: "+input);
         log.severe("lineString: " + lineString);
         User active = userList.get(user);
-        String[] temp2 = deStringify(input);
+        // destringify urnroi list and lineannotation list respectfully
+        String[] temp2 = deStringify(input, 2);
+        String[] temp3 = deStringify(lineString, 1);
         log.severe("in handle: "+ temp2[0]);
-        boolean test = active.returnPage(temp2, lineString);
+        boolean test = active.returnPage(temp2, temp3);
         return test;
 
     }
@@ -354,7 +356,14 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
 
     private String[] deStringify(String input) {
         log.info("destring: "+ input);
-        input = input.substring(1, input.length() - 1);
+        input = input.substring(2, input.length() - 2);
+        log.info("Destring2 "+ input);
+        String[] output = input.split("\",\"");
+        return output;
+    }
+    private String[] deStringify(String input, int offset) {
+        log.info("destring: "+ input);
+        input = input.substring(offset, input.length() - offset);
         log.info("Destring2 "+ input);
         String[] output = input.split("\",\"");
         return output;

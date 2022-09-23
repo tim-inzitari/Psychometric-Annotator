@@ -688,12 +688,12 @@ $("#submitButton").click(function() {
 
     });
 function submitPost(x, outArray,xArray, yArray, annotationList){
-    if(x===annotationList.length-1){
+    if(x===annotationList.length){
         $.post("URNServlet", {
             askResponse: "res",
             type:"lineseg",
-            data: JSON.stringify(outArray[x]),
-            lineString: annotationList[x]
+            data: JSON.stringify(outArray),
+            lineString: JSON.stringify(annotationList),
         },function(responseText){
             console.log(responseText);
             if(responseText === "TRUE") {
@@ -708,24 +708,11 @@ function submitPost(x, outArray,xArray, yArray, annotationList){
         
         }else{
 
-            //var imgRet = rectStuff(outArray[x]) // MAKE CROPPED IMAGE HERE
 
-            //console.log('imgret',imgRet);
+
+
+            // Do image stuff here
             submitPost(x+1,outArray,xArray,yArray,annotationList);
-            /*
-            $.post("URNServlet", {
-                askResponse: "imgLine",
-                urn:imgUrn,
-                id:x,
-                x:xArray[x],
-                y:yArray[x],
-                data:imgRet,
-                annotation:annotationList[x]
-              }, function(){
-                submitPost(x+1,outArray,xArray,yArray,annotationList);
-
-            });
-            */
         
 
             

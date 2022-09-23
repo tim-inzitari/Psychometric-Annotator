@@ -115,7 +115,7 @@ public class User {
         return hasPageDB();
     }
     // Line String
-    public boolean returnPage(String[] plines, String annotations){
+    public boolean returnPage(String[] plines, String[] annotations){
         String urn = plines[0].split("@")[0];
         log.severe(urn);
         if(!this.activePage.getURN().equals(urn)){
@@ -380,19 +380,21 @@ public class User {
     }
 
 
-    private void saveLinesSegDB(int page, String[] lines, String annotations){
+    private void saveLinesSegDB(int page, String[] lines, String[] annotations){
         Connection dbc = null;
         PreparedStatement saveLines = null;
         PreparedStatement usePage = null;
         try {
             dbc = getConnection();
             String saveLinesSQL = "INSERT IGNORE INTO lineSeg (docID,lineSegNo,URN, lineString) VALUES (?,?,?,?)";
+            
             saveLines = dbc.prepareStatement(saveLinesSQL);
             for(int x = 0; x < lines.length; x++){
+                
                 saveLines.setInt(1,page);
                 saveLines.setInt(2,x);
                 saveLines.setString(3,lines[x]);
-                saveLines.setString(4,annotations);
+                saveLines.setString(4,annotations[x]);
                 saveLines.executeUpdate();
             }
             saveLines.close();
