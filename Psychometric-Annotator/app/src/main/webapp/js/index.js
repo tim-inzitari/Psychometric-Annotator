@@ -17,8 +17,11 @@ $(document).ready(function() {
         if(output[2] === "TRUE"){
             $('#characters').show();
         }*/
-        if(output[3] === "TRUE"){
+        /*if(output[3] === "TRUE"){
             $('#letters').show();
+        }*/
+        if(output[4] === "TRUE"){
+            $('#lineAnno').show();
         }
     });
 });
