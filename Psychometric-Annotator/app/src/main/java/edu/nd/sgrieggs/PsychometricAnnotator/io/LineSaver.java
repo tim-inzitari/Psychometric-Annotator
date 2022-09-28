@@ -12,16 +12,14 @@ public class LineSaver {
     private String saveLocation;
     private String urn;
     private int line;
-    private int word;
-    private int character;
     private int x;
     private int y;
     private String user;
     private String imgUrl;
-    private char annotation;
+    private String annotation;
 
 
-    public LineSaver(String saveLocation, String urn, int line, int word, int character, int x, int y, String user, String imgUrl, char annotation){
+    public LineSaver(String saveLocation, String urn, int line, int x, int y, String user, String imgUrl, String annotation){
         this.saveLocation = saveLocation;
 
         String operatingSystem = System.getProperty("os.name").toLowerCase();
@@ -33,8 +31,6 @@ public class LineSaver {
         this.urn = this.urn.split("@")[0];
         this.user = user;
         this.line = line;
-        this.word = word;
-        this.character = character;
         this.x = x;
         this.y = y;
         this.user = user;
@@ -58,8 +54,6 @@ public class LineSaver {
             PrintWriter writer = new PrintWriter(dataOut, "UTF-8");
             writer.println(urn);
             writer.println(line);
-            writer.println(word);
-            writer.println(character);
             writer.println(x);
             writer.println(y);
             writer.println(user);
