@@ -371,6 +371,15 @@ function getImageSource(imgUrn){
     return ts;
 }
 
+// l2r toggle implement
+$(document).on('change', '#l2r',  function() {
+    txtDir = $(this).find(":selected").val();
+    console.log("txt dir is now "+ txtDir);
+    $('input[type=text]').each(function() {
+        $(this).attr('dir', txtDir);
+    });
+});
+
 function updateValue(){
     var x = document.getElementById("difficulty_range").value;
     document.getElementById("difficulty_view").innerHTML = x;
