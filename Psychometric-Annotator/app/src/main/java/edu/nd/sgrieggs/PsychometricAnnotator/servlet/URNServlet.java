@@ -169,7 +169,7 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
                     response.getWriter().write("FALSE");
                 }
             }
-            else if (type.equals("anno")) {
+            else if (type.equals("lineanno")) {
 
                 int lineNo = Integer.parseInt(request.getParameter("lineNo"));
                 String urn = request.getParameter("urn");
