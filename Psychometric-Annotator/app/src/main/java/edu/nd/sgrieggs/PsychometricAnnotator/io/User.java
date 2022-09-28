@@ -189,7 +189,8 @@ public class User {
     }
 
     public boolean returnLineAnno(int timer, String annotation, int difficulty, String urn, int lineNo){
-        if(this.activeLineSeg.getLineNo() != lineNo || this.activeLetter.getURN().split("@")[0].equals(urn.split("@")[0])){
+        log.info("lineanno1");
+        if(this.activeLineSeg.getLineNo() != lineNo || this.activeLineSeg.getURN().split("@")[0].equals(urn.split("@")[0])){
             int id = this.lookupIdDB(urn.split("@")[0]);
             if(id == -1){
                 return true;
@@ -197,8 +198,10 @@ public class User {
                 this.activeLineSeg = new LineSeg(this.user, id, lineNo, urn, null);
             }
         }
+        log.info("lineanno2");
+        log.info("here: " + timer + annotation + difficulty);
         saveLineAnnotationDB(timer,annotation,difficulty);
-        return hasLineSegDB();
+        return hasLineAnnoDB();
     }
 
     public boolean[] initalCheck(){
@@ -867,17 +870,17 @@ public class User {
         ResultSet getCountRes = null;
         try{
             dbc = getConnection();
-            String saveAnnotationSQL = "INSERT IGNORE INTO lineannotation(transID, docID, lineNo, annoValue, timer, difficulty) VALUES (?,?,?,?,?,?,?,?)";
+            String saveAnnotationSQL = "INSERT IGNORE INTO lineannotation(transID, docID, lineSegNo, annoValue, timer, difficulty) VALUES (?,?,?,?,?,?)";
             saveAnnotation = dbc.prepareStatement(saveAnnotationSQL);
             saveAnnotation.setString(1,sanitize(this.user));
-            saveAnnotation.setInt(2,this.activeLetter.getDocID());
-            saveAnnotation.setInt(3,this.activeLetter.getLineNo());
+            saveAnnotation.setInt(2,this.activeLineSeg.getDocID());
+            saveAnnotation.setInt(3,this.activeLineSeg.getLineNo());
             saveAnnotation.setString(4,annotation);
             saveAnnotation.setInt(5,timer);
             saveAnnotation.setInt(6,difficulty);
 
             saveAnnotation.executeUpdate();
-            this.activeLetter = null;
+            this.activeLineSeg = null;
         } catch (SQLException se) {
             log.severe("SQL Exception: " + se.getMessage());
             se.printStackTrace();
@@ -1165,6 +1168,65 @@ public class User {
             try {
                 if (loadLetter != null) {
                     loadLetter.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage()+se.getStackTrace().toString());
+                se.printStackTrace();
+            }
+            return out;
+        }
+    }
+
+    private boolean hasLineAnnoDB(){
+        Connection dbc = null;
+        PreparedStatement loadLineAnno = null;
+        ResultSet loadLineAnnoRes = null;
+        boolean out = false;
+        try {
+            dbc = getConnection();
+            String loadLineAnnoSQL = "SELECT l.* " +
+                    "FROM lineSeg l " +
+                    "WHERE NOT EXISTS (SELECT a.* FROM lineannotation a WHERE a.transID = ? AND a.docID = l.docID AND a.lineSegNo = l.lineSegNo) " +
+                    "ORDER BY RAND() LIMIT 1 ";
+            String loadLetterSQLi = "SELECT * \n" +
+                    "FROM letter\n" +
+                    "WHERE transID = ? AND annotation IS NULL\n" +
+                    "ORDER BY RAND() LIMIT 1";
+            loadLineAnno = dbc.prepareStatement(loadLineAnnoSQL);
+            loadLineAnno.setString(1, sanitize(this.user));
+            loadLineAnnoRes = loadLineAnno.executeQuery();
+            if (loadLineAnnoRes.next()) {
+                out = true;
+            }
+            loadLineAnnoRes.close();
+            loadLineAnno.close();
+            dbc.close();
+        } catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (loadLineAnnoRes != null) {
+                    loadLineAnnoRes.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (loadLineAnno != null) {
+                    loadLineAnno.close();
                 }
             } catch (SQLException se) {
                 log.severe("SQL Exception: " + se.getMessage());
