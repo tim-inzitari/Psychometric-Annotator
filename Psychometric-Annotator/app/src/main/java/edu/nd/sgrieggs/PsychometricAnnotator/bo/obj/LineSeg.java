@@ -17,6 +17,12 @@ public class LineSeg {
         this.lineString = lineString;
     }
 
+    public LineSeg( int docID, int lineNo, String URN) {
+        this.docID = docID;
+        this.lineNo = lineNo;
+        this.URN = URN;
+    }
+
     public LineSeg(String userId, int docID, int lineNo, String URN, String lineString) {
         this.userId = userId;
         this.docID = docID;

@@ -360,7 +360,7 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
     }
 
     private boolean handleLineAnnotationReturn(int user, int timer, String annotation, int difficulty, String urn, int lineNo) {
-        return userList.get(user).returnLine(timer, annotation, difficulty, urn, lineNo);
+        return userList.get(user).returnLineAnno(timer, annotation, difficulty, urn, lineNo);
     }
 
     private boolean[] handleInitialAsk(int user) {

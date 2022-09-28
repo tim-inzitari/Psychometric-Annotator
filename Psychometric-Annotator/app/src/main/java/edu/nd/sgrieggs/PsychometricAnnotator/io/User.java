@@ -145,6 +145,21 @@ public class User {
         return hasLineDB();
     }
 
+    public boolean returnLineSeg(String[] lwords, int lineNo){
+        String urn = lwords[0].split("@")[0];
+        if(lineNo != this.activeLineSeg.getLineNo() || !this.activeLineSeg.getURN().split("@")[0].equals(urn)){
+            int id = this.lookupIdDB(urn);
+            if(id == -1){
+                return true;
+            }else{
+                this.activeLineSeg = new LineSeg(id,lineNo,urn, null);
+            }
+        }
+        new LineSeg(3,3,"", "");
+        saveWordsDB(this.activeLine.getDocID(),this.activeLine.getLineNo(),lwords);
+        return hasLineSegDB();
+    }
+
 
     public boolean returnWord(String annotation, String[] wletters, int lineNo, int wordNo) {
         String urn = wletters[0].split("@")[0];
@@ -173,7 +188,7 @@ public class User {
         return hasLetterDB();
     }
 
-    public boolean returnLine(int timer, String annotation, int difficulty, String urn, int lineNo){
+    public boolean returnLineAnno(int timer, String annotation, int difficulty, String urn, int lineNo){
         if(this.activeLineSeg.getLineNo() != lineNo || this.activeLetter.getURN().split("@")[0].equals(urn.split("@")[0])){
             int id = this.lookupIdDB(urn.split("@")[0]);
             if(id == -1){
@@ -852,14 +867,14 @@ public class User {
         ResultSet getCountRes = null;
         try{
             dbc = getConnection();
-            String saveAnnotationSQL = "INSERT IGNORE INTO lineannotation(transID, docID, lineNo, wordNo, letterNo, annoValue, timer, difficulty) VALUES (?,?,?,?,?,?,?,?)";
+            String saveAnnotationSQL = "INSERT IGNORE INTO lineannotation(transID, docID, lineNo, annoValue, timer, difficulty) VALUES (?,?,?,?,?,?,?,?)";
             saveAnnotation = dbc.prepareStatement(saveAnnotationSQL);
             saveAnnotation.setString(1,sanitize(this.user));
             saveAnnotation.setInt(2,this.activeLetter.getDocID());
             saveAnnotation.setInt(3,this.activeLetter.getLineNo());
-            saveAnnotation.setString(6,annotation);
-            saveAnnotation.setInt(7,timer);
-            saveAnnotation.setInt(8,difficulty);
+            saveAnnotation.setString(4,annotation);
+            saveAnnotation.setInt(5,timer);
+            saveAnnotation.setInt(6,difficulty);
 
             saveAnnotation.executeUpdate();
             this.activeLetter = null;
