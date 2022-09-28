@@ -2,6 +2,7 @@ package edu.nd.sgrieggs.PsychometricAnnotator.servlet;
 
 import edu.nd.sgrieggs.PsychometricAnnotator.bo.obj.Word;
 import edu.nd.sgrieggs.PsychometricAnnotator.io.LetterSaver;
+import edu.nd.sgrieggs.PsychometricAnnotator.io.LineSaver;
 import edu.nd.sgrieggs.PsychometricAnnotator.io.User;
 import javax.servlet.ServletContext;
 import java.io.*;
@@ -215,13 +216,13 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
             int y = (int)Double.parseDouble(request.getParameter("y"));
             String imgURL = request.getParameter("data");
             String urn = request.getParameter("urn");
-            int cn = Integer.parseInt(request.getParameter("id"));
-            char anno = request.getParameter("annotation").toCharArray()[0];
+            int ln = Integer.parseInt(request.getParameter("id"));
+            String anno = request.getParameter("annotation");
 
 
 
             log.info("saving input letter to " + (String)ctx.getAttribute("FILES_DIR")+"....");
-            LetterSaver saver = new LetterSaver((String)ctx.getAttribute("FILES_DIR"), urn, cn,x, y ,x, y, user, imgURL, anno);
+            LineSaver saver = new LineSaver((String)ctx.getAttribute("FILES_DIR"), urn, ln,x, y, user, imgURL, anno);
             if(saver.saveImage()){
                 saver = null;
                 log.info("success!");

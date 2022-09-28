@@ -558,6 +558,87 @@ function getGroup(i){
 }
 
 
+function getImageSource(imgUrn){
+    var plainUrn = imgUrn.split("@")[0];
+    var imgId = plainUrn.split(":")[4];
+    var ts = "";
+    var localDir = plainUrn.split(":")[0] + "_" + plainUrn.split(":")[1] + "_" + plainUrn.split(":")[2] + "_" + plainUrn.split(":")[3] + "_/";
+    ts = "image_archive/" + plainUrn + "_RAW.jpg";
+    console.log('imgUrn' + imgUrn)
+    return ts;
+}
+function rectStuff(urn){
+    split = urn.split('@');
+    canvas = new fabric.Canvas('image_imageCanvas');
+    var image = new Image;
+    
+    image.onload=function() {
+        var loc = getImageLocation(imgUrn);
+        var x1 = image.width * loc[0];
+        var y1 = image.height * loc[1];
+        var width = image.width * loc[2];
+        var height = image.height * loc[3];
+        hori = -x1;
+        var background = new fabric.Image(image, {
+            left: -x1,
+            top: -y1,
+            angle: 0,
+            opacity: .5,
+            lockRotation: true,
+            lockScalingX: true,
+            lockScalingY: true,
+            lockSkewingX: true,
+            lockSkewingY: true,
+            hasBorders: false,
+            hasControls: false,
+            selectable: false
+        });
+        docheight = background.height;
+        docwidth = background.width;
+        imageInstance = new fabric.Image(image, {
+            left: -x1,
+            top: -y1,
+            angle: 0,
+            opacity: 1,
+             clipTo: function (ctx) {
+                 ctx.rect(x1 - (image.width / 2), y1 - (image.height / 2), width, height);
+             },
+            height: docheight,
+            width: docwidth,
+            lockRotation: true,
+            lockScalingX: true,
+            lockScalingY: true,
+            lockSkewingX: true,
+            lockSkewingY: true,
+            hasBorders: false,
+            hasControls: false
+        });
+        canvas.add(imageInstance);
+        canvas.renderAll();
+        imageInstance.selectable = false;
+    }
+    image.src = getImageSource(imgUrn);
+    rerenderThatActuallyWorks();
+    return canvas.toDataURL();
+
+
+}
+
+function rerenderThatActuallyWorks(){
+    canvas.renderAll();
+}
+
+
+
+
+
+
+
+
+
+
+
+
 function validateAnno(){
     // validate all textboxes are filled first
     $(".focusInputClass").each(function() {
@@ -710,9 +791,23 @@ function submitPost(x, outArray,xArray, yArray, annotationList){
 
 
 
-
+            var imgRet = rectStuff(outArray[x]);
+            console.log('make imageret: ', imgRet)
             // Do image stuff here
-            submitPost(x+1,outArray,xArray,yArray,annotationList);
+
+            $.post("URNServlet", {
+                askResponse: "imgLine",
+                urn:imgUrn,
+                id:x,
+                x:xArray[x],
+                y:yArray[x],
+                data:imgRet,
+                annotation: annotationList[x]
+              }, function(){
+                submitPost(x+1,outArray,xArray,yArray,annotationList);
+            });
+
+
         
 
             
