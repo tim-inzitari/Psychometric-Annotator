@@ -309,7 +309,7 @@ function setUpUI(){
     $('#loadImageButton').show();
 
 }
-
+var new_width = 0;
 function imageDrawer(){
     canvas = new fabric.Canvas('image_imageCanvas');
 
@@ -322,6 +322,7 @@ function imageDrawer(){
         var y1 = image.height * loc[1];
         var width = image.width * loc[2];
         var height = image.height * loc[3];
+        new_width = width;
         var imageInstance = new fabric.Image(image, {
             left: -x1,
             top: -y1,
@@ -345,7 +346,7 @@ function imageDrawer(){
         canvas.renderAll();
     }
     image.src = getImageSource(imgUrn);
-    canvas.setZoom(3);
+    canvas.setZoom(2);
     canvas.renderAll();
 }
 
@@ -388,13 +389,11 @@ $('#submitButton').click(function() {
     anno = $('#annoInput').val();
     $.post("URNServlet", {
         askResponse: "res",
-        type:"anno",
+        type:"lineanno",
         timer: new Date().getTime() - startTime,
         annotation: anno,
         difficulty: $('#difficulty_range').val(),
         lineNo: lineNo,
-        wordNo: wordNo,
-        letterNo: letterNo,
         urn: imgUrn
     },function(responseText){
         if(responseText === "TRUE") {

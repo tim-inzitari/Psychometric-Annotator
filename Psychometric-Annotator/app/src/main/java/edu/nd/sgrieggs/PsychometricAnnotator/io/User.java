@@ -173,6 +173,19 @@ public class User {
         return hasLetterDB();
     }
 
+    public boolean returnLine(int timer, String annotation, int difficulty, String urn, int lineNo){
+        if(this.activeLineSeg.getLineNo() != lineNo || this.activeLetter.getURN().split("@")[0].equals(urn.split("@")[0])){
+            int id = this.lookupIdDB(urn.split("@")[0]);
+            if(id == -1){
+                return true;
+            }else{
+                this.activeLineSeg = new LineSeg(this.user, id, lineNo, urn, null);
+            }
+        }
+        saveLineAnnotationDB(timer,annotation,difficulty);
+        return hasLineSegDB();
+    }
+
     public boolean[] initalCheck(){
         boolean out[] = new boolean[5];
         out[0] = hasPageDB();
@@ -797,6 +810,53 @@ public class User {
             saveAnnotation.setInt(3,this.activeLetter.getLineNo());
             saveAnnotation.setInt(4,this.activeLetter.getWordNo());
             saveAnnotation.setInt(5,this.activeLetter.getLetterNo());
+            saveAnnotation.setString(6,annotation);
+            saveAnnotation.setInt(7,timer);
+            saveAnnotation.setInt(8,difficulty);
+
+            saveAnnotation.executeUpdate();
+            this.activeLetter = null;
+        } catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        }finally {
+            try {
+                if (saveAnnotation != null) {
+                    saveAnnotation.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+
+        }
+
+
+    }
+
+    private void saveLineAnnotationDB(int timer, String annotation, int difficulty){
+        Connection dbc = null;
+        PreparedStatement saveAnnotation = null;
+        PreparedStatement getCount = null;
+        ResultSet getCountRes = null;
+        try{
+            dbc = getConnection();
+            String saveAnnotationSQL = "INSERT IGNORE INTO lineannotation(transID, docID, lineNo, wordNo, letterNo, annoValue, timer, difficulty) VALUES (?,?,?,?,?,?,?,?)";
+            saveAnnotation = dbc.prepareStatement(saveAnnotationSQL);
+            saveAnnotation.setString(1,sanitize(this.user));
+            saveAnnotation.setInt(2,this.activeLetter.getDocID());
+            saveAnnotation.setInt(3,this.activeLetter.getLineNo());
             saveAnnotation.setString(6,annotation);
             saveAnnotation.setInt(7,timer);
             saveAnnotation.setInt(8,difficulty);

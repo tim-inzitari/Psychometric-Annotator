@@ -8,8 +8,17 @@ public class LineSeg {
     int lineNo;
     String URN;
     String lineString;
+    String userId;
 
     public LineSeg( int docID, int lineNo, String URN, String lineString) {
+        this.docID = docID;
+        this.lineNo = lineNo;
+        this.URN = URN;
+        this.lineString = lineString;
+    }
+
+    public LineSeg(String userId, int docID, int lineNo, String URN, String lineString) {
+        this.userId = userId;
         this.docID = docID;
         this.lineNo = lineNo;
         this.URN = URN;

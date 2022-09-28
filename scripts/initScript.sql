@@ -73,6 +73,20 @@ create table annotation(
    PRIMARY KEY (transID,docID,lineNo,wordNo,letterNo)
 );
 
+create table lineannotation(
+   transID varchar(20) Not NULL,
+   docID int NOT NULL,
+   lineSegNo int NOT NULL,
+   annoValue varchar(120),
+   timer int,
+   difficulty double,
+   CONSTRAINT fk_lineannotation_user FOREIGN KEY (transID) REFERENCES trans(ID) ON DELETE CASCADE,
+   CONSTRAINT fk_lineannotation_doc FOREIGN KEY (docID) REFERENCES doc(ID) ON DELETE CASCADE,
+   CONSTRAINT fk_lineannotation_line FOREIGN KEY (docID,lineSegNo) REFERENCES lineSeg(docID,lineSegNo) ON DELETE CASCADE,
+   PRIMARY KEY (transID,docID,lineSegNo)
+);
+
+
 
 #INSERT INTO doc(ID,URN) VALUES (0,"urn:cite2:hmt:vaimg.v1:VA012RN_0013");
 #INSERT INTO doc(ID,URN) VALUES (1,"urn:cite2:hmt:vaimg.v1:VA012RND_0892");

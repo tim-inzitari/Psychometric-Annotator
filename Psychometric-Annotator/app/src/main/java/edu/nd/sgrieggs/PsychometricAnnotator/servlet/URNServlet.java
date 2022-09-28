@@ -169,6 +169,18 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
                     response.getWriter().write("FALSE");
                 }
             }
+            else if (type.equals("anno")) {
+
+                int lineNo = Integer.parseInt(request.getParameter("lineNo"));
+                String urn = request.getParameter("urn");
+
+                boolean out = handleLineAnnotationReturn(translateUser(user), Integer.parseInt(request.getParameter("timer")), request.getParameter("annotation"), Integer.parseInt(request.getParameter("difficulty")),urn,lineNo);
+                if (out) {
+                    response.getWriter().write("TRUE");
+                } else {
+                    response.getWriter().write("FALSE");
+                }
+            }
             else {
                 log.severe("Invalid Response : " + type);
             }
@@ -345,6 +357,10 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
 
     private boolean handleAnnotationReturn(int user, int timer, String annotation, int difficulty, String urn, int lineNo, int wordNo, int letterNo) {
         return userList.get(user).returnLetter(timer, annotation, difficulty, urn, lineNo, wordNo, letterNo);
+    }
+
+    private boolean handleLineAnnotationReturn(int user, int timer, String annotation, int difficulty, String urn, int lineNo) {
+        return userList.get(user).returnLine(timer, annotation, difficulty, urn, lineNo);
     }
 
     private boolean[] handleInitialAsk(int user) {
