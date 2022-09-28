@@ -234,7 +234,7 @@ classList = hebrewList
 var anno = "";
 var lineNo = -1;
 var wordNo = -1;
-var txtDir = 'rtl';
+var textDir = 'rtl';
 var letterNo = -1;
 var imgUrn;
 var startTime;
