@@ -556,13 +556,23 @@ function getGroup(i){
     return rv
 
 }
-
+function getImageLocation(imgUrn){
+    var splitUrn = imgUrn.split("@");
+    console.log("split urn ", splitUrn)
+    if(splitUrn.length <= 1){
+        console.log('fail splitUrn')
+        return [0,0,1,1];
+    }else{
+        var vals = splitUrn[1].split(",");
+        console.log('vals ', vals);
+        return [vals[0]+0,vals[1]+0,vals[2]+0,vals[3]+0];
+    }
+}
 
 function getImageSource(imgUrn){
     var plainUrn = imgUrn.split("@")[0];
-    var imgId = plainUrn.split(":")[4];
+    console.log('plain urn ', plainUrn)
     var ts = "";
-    var localDir = plainUrn.split(":")[0] + "_" + plainUrn.split(":")[1] + "_" + plainUrn.split(":")[2] + "_" + plainUrn.split(":")[3] + "_/";
     ts = "image_archive/" + plainUrn + "_RAW.jpg";
     console.log('imgUrn' + imgUrn)
     return ts;
@@ -571,9 +581,10 @@ function rectStuff(urn){
     split = urn.split('@');
     canvas = new fabric.Canvas('image_imageCanvas');
     var image = new Image;
-    
     image.onload=function() {
-        var loc = getImageLocation(imgUrn);
+        var loc = getImageLocation(urn);
+        image.width = loc[1] - loc[0];
+        image.height = loc[3] - loc[2];
         var x1 = image.width * loc[0];
         var y1 = image.height * loc[1];
         var width = image.width * loc[2];
@@ -617,7 +628,7 @@ function rectStuff(urn){
         canvas.renderAll();
         imageInstance.selectable = false;
     }
-    image.src = getImageSource(imgUrn);
+    image.src = getImageSource(urn);
     rerenderThatActuallyWorks();
     return canvas.toDataURL();
 
@@ -780,9 +791,9 @@ function submitPost(x, outArray,xArray, yArray, annotationList){
             if(responseText === "TRUE") {
                 location.reload();
             }else{
-                console.log('fail res '+ x)
                 console.log('anno: '+annotationList[x] +" data: " + outArray[x])
                 window.location = "/index.html";
+
             }
         });
         

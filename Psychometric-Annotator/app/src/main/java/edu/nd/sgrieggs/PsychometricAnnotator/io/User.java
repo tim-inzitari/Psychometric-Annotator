@@ -65,12 +65,12 @@ public class User {
     }
 
     public String getNextLineSeg(){
-        if(this.activeLine != null){
-            return this.activeLine.getURN()+"-"+this.activeLine.getLineNo();
+        if(this.activeLineSeg != null){
+            return this.activeLineSeg.getURN()+"-"+this.activeLineSeg.getLineNo();
         }else{
-            loadLineDB();
-            if(this.activeLine != null) {
-                return this.activeLine.getURN()+"-"+this.activeLine.getLineNo();
+            loadLineSegDB();
+            if(this.activeLineSeg != null) {
+                return this.activeLineSeg.getURN()+"-"+this.activeLineSeg.getLineNo();
             }
         }
         return null;
@@ -459,6 +459,64 @@ public class User {
                 log.info(loadLineSQL+" resulted in no return");
             }
             log.info("["+this.activeLine.getDocID() + " , " + this.activeLine.getLineNo() + "]:" + this.activeLine.getURN());
+            loadLineRes.close();
+            loadLine.close();
+            dbc.close();
+        } catch (SQLException se) {
+            log.severe("SQL Exception: " + se.getMessage());
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (loadLineRes != null) {
+                    loadLineRes.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (loadLine != null) {
+                    loadLine.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+            try {
+                if (dbc != null) {
+                    dbc.close();
+                }
+            } catch (SQLException se) {
+                log.severe("SQL Exception: " + se.getMessage());
+                se.printStackTrace();
+            }
+
+        }
+    }
+
+    private void loadLineSegDB(){
+        Connection dbc = null;
+        PreparedStatement loadLine = null;
+        ResultSet loadLineRes = null;
+        try {
+            dbc = getConnection();
+
+            String loadLineSQL = "SELECT * \n" +
+                    "FROM lineSeg\n" +
+                    "WHERE used = false\n" +
+                    "ORDER BY RAND() LIMIT 1";
+            loadLine = dbc.prepareStatement(loadLineSQL);
+            loadLineRes = loadLine.executeQuery();
+
+            if (loadLineRes.next()) {
+                this.activeLineSeg = new LineSeg(loadLineRes.getInt(1), loadLineRes.getInt(2),loadLineRes.getString(3), loadLineRes.getString(4));
+            }else{
+                log.info(loadLineSQL+" resulted in no return");
+            }
+            log.info("["+this.activeLineSeg.getDocID() + " , " + this.activeLineSeg.getLineNo() + "]:" + this.activeLineSeg.getURN());
             loadLineRes.close();
             loadLine.close();
             dbc.close();

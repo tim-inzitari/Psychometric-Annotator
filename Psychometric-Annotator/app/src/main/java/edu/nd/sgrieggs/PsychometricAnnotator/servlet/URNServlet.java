@@ -210,7 +210,7 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
             }
 
 
-        } else if(askResponse.toLowerCase().equals("imgLine")){
+        } else if(askResponse.toLowerCase().equals("imgline")){
             //The response is a letter image
             int x = (int)Double.parseDouble(request.getParameter("x"));
             int y = (int)Double.parseDouble(request.getParameter("y"));
@@ -247,6 +247,9 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
                 response.getWriter().write(handleCharacterSelector(translateUser(user)));
             } else if (type.toLowerCase().equals("charann")) {
                 response.getWriter().write(handleCharacterAnnotator(translateUser(user)));
+            }
+            else if (type.toLowerCase().equals("lineann")){
+                response.getWriter().write(handleLineAnnotator(translateUser(user)));
             }
             else if(type.toLowerCase().equals("linesegselector")) {
                 response.getWriter().write(handleLineSegSelector(translateUser(user)));}
@@ -305,14 +308,14 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
     }
 
     private boolean handleLineSegReturn(int user, String input, String lineString) {
-        log.severe("user: " + user);
-        log.severe("input: "+input);
-        log.severe("lineString: " + lineString);
+        log.info("user: " + user);
+        log.info("input: "+input);
+        log.info("lineString: " + lineString);
         User active = userList.get(user);
         // destringify urnroi list and lineannotation list respectfully
         String[] temp2 = deStringify(input, 2);
         String[] temp3 = deStringify(lineString, 2);
-        log.severe("in handle: "+ temp2[0]);
+        log.info("in handle: "+ temp2[0]);
         boolean test = active.returnPage(temp2, temp3);
         return test;
 
@@ -334,6 +337,10 @@ public class URNServlet extends javax.servlet.http.HttpServlet {
 
     private String handleCharacterAnnotator(int user) {
         return userList.get(user).getNextLetter();
+    }
+    private String handleLineAnnotator(int user) {
+        log.info(" HANDLE LINE ANNO HANDLE LINE ANNO HANDLE LINE ANNO");
+        return userList.get(user).getNextLineSeg();
     }
 
     private boolean handleAnnotationReturn(int user, int timer, String annotation, int difficulty, String urn, int lineNo, int wordNo, int letterNo) {
