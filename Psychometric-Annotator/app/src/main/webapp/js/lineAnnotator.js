@@ -15,7 +15,7 @@ var button_label;
 var block;
 var defaultLang = 'he'
 var block_name;
-var txtbox = "<input type='text' size='30' value='' class='keyboardInput focusInputClass' lang='" + defaultLang + "' maxlength='4' id='annoInput'  required>";
+
 
 
 var extraChars= [["unknown/other", "&lt;UNK&gt;"]]
@@ -233,6 +233,7 @@ classList = hebrewList
 var anno = "";
 var lineNo = -1;
 var wordNo = -1;
+var txtDir = 'rtl';
 var letterNo = -1;
 var imgUrn;
 var startTime;
@@ -270,7 +271,7 @@ jQuery(function($){
 });
 
 $(document).ready(function(){
-    $('#inputBox').append(txtbox);
+    $('#inputBox').append("<input type='text' size='30' value='' class='keyboardInput focusInputClass' dir='"+textDir+"'   lang='" + defaultLang + "' maxlength='4' id='annoInput'  required>");
     populateSelectMenu(unicodeBlockSet);
     makeSuperTable();
 });
