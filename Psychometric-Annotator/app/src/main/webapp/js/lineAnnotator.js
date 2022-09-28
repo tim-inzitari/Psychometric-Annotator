@@ -15,7 +15,7 @@ var button_label;
 var block;
 var defaultLang = 'he'
 var block_name;
-var txtbox = "<input type='text' size='3' value='' class='keyboardInput focusInputClass' lang='" + defaultLang + "' maxlength='4' id='annoInput'  required>";
+var txtbox = "<input type='text' size='30' value='' class='keyboardInput focusInputClass' lang='" + defaultLang + "' maxlength='4' id='annoInput'  required>";
 
 
 var extraChars= [["unknown/other", "&lt;UNK&gt;"]]
@@ -346,7 +346,7 @@ function imageDrawer(){
         canvas.renderAll();
     }
     image.src = getImageSource(imgUrn);
-    canvas.setZoom(2);
+    canvas.setZoom(1.75);
     canvas.renderAll();
 }
 
